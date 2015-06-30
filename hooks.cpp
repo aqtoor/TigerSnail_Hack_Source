@@ -11,12 +11,16 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.1
+	Version: 0.2
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
 	File: hooks.cpp: Hook implementations
 */
+
+//======================================================================
+CGameEventListener* pSampleEventListener = NULL;
+//======================================================================
 
 //======================================================================
 void SOURCEAPI OnInitialize(void)
@@ -25,6 +29,23 @@ void SOURCEAPI OnInitialize(void)
 
 	//Get screen size
 	g_pEngineClient->GetScreenSize(g_ScreenSize.x, g_ScreenSize.y);
+
+	//Reset player data
+	g_oPlayerMgr.Reset();
+
+	//Set colors
+	g_oPlayerMgr.SetTeamColor(PLAYER_TEAM_CT, g_oPlayerMgr.MakeColor24(121, 205, 205));
+	g_oPlayerMgr.SetTeamColor(PLAYER_TEAM_T, g_oPlayerMgr.MakeColor24(210, 105, 30));
+	g_oPlayerMgr.SetTeamColor(PLAYER_TEAM_VISIBLE, g_oPlayerMgr.MakeColor24(0, 255, 0));
+
+	//Load game event resource file
+	if (!g_pGameEventManager->LoadEventsFromFile("resource/gameevents.res"))
+		ExitError("IGameEventManager::LoadEventsFromFile() failed");
+
+	//Register sample game event listener
+	pSampleEventListener = new CGameEventListener("player_spawn");
+	if (!pSampleEventListener)
+		ExitError("Failed to instantiate sample game event listener");
 
 	//Inform via console
 	g_oDelayedClientCmd.AddClientCmd("clear", 1000);
@@ -106,6 +127,9 @@ void SOURCEAPI Hook_Shutdown(void)
 	}
 
 	g_bMapInit = false; //Uninitialized
+
+	//Free memory
+	delete pSampleEventListener;
 }
 //======================================================================
 
@@ -163,7 +187,7 @@ void SOURCEAPI Hook_HudUpdate(bool bActive)
 		
 		OnFirstFrame();
 	}
-	
+
 	__asm {
 		push ECX; //Backup ECX
 		mov ECX, dwClassBase; //Copy start address of the CHLClient instance to ECX, the same the this-pointer holds. This is needed for every method call
@@ -172,26 +196,18 @@ void SOURCEAPI Hook_HudUpdate(bool bActive)
 		pop ECX; //Restore ECX
 	}
 
+	//Update indicator
+	g_bIsInGame = g_pEngineClient->IsInGame();
+
 	//Process delayed client commands if any
 	g_oDelayedClientCmd.Process();
 
-	/*if (g_pEngineClient->IsInGame()) {
-		for (int i = 1 ; i < g_pEngineClient->GetMaxClients(); i++) {
-			IClientNetworkable* pClientNetworkable = g_pClientEntityList->GetClientNetworkable(i);
-			if (pClientNetworkable) {
-				IClientUnknown* pClientUnknown = pClientNetworkable->GetIClientUnknown();
-				if (pClientUnknown) {
-					_C_BaseEntity* pBaseEntity = (_C_BaseEntity*)pClientUnknown->GetBaseEntity();
-					if (pBaseEntity) {
-						_player_info_t sPlayerInfo;
-						if (g_pEngineClient->GetPlayerInfo(i, (player_info_t*)&sPlayerInfo)) {
-							
-						}
-					}
-				}
-			}
+	//Update player data
+	if (g_bIsInGame) {
+		for (EPLAYERID i = 1; i < MAX_CLIENTS; i++) {
+			g_oPlayerMgr.UpdateSlot(i);
 		}
-	}*/
+	}
 }
 //======================================================================
 
@@ -293,20 +309,39 @@ void SOURCEAPI Hook_BeginFrame(void)
 		pop ECX; //Restore ECX
 	}
 
-	if ((g_pcvNameESP->bValue) || (g_pcvSteamIDESP->bValue)) { //Check if one of the concerning enhancements is enabled
-		if (g_pEngineClient->IsInGame()) { //If ingame context is given
-			int iLocalPlayerIndex = g_pEngineClient->GetLocalPlayer(); //Get index of local player entity
-			for (int i = 1 ; i < g_pEngineClient->GetMaxClients(); i++) { //Loop through player entity slots
-				if (i != iLocalPlayerIndex) { //If this player index does not refer to the local player
-					_player_info_t sPlayerInfo;
-					if (g_pEngineClient->GetPlayerInfo(i, (player_info_t*)&sPlayerInfo)) { //Attempt to get player info
-						if (g_pcvNameESP->bValue) { //Name ESP
-							g_pDebugOverlay->AddEntityTextOverlay(i, 0, 1.0f, 200, 200, 200, 255, sPlayerInfo.name); //Draw text overlay on screen for this player entity
-						}
+	if (g_bIsInGame) { //If ingame context is given
+		if ((g_pcvNameESP->bValue) || (g_pcvSteamIDESP->bValue) || (g_pcvDistanceESP->bValue)) { //Check if one of the concerning enhancements is enabled
+			for (EPLAYERID i = 1 ; i < MAX_CLIENTS; i++) { //Loop through player entity slots
+				player_data_s* pPlayerData = g_oPlayerMgr.Slot(i); //Get player data of current player slot
+				if ((pPlayerData) && (g_oPlayerMgr.IsPlaying(i))) { //Check if player is valid to be used for drawing
+					//Ignore local player
+					if (pPlayerData->bIsLocal)
+						continue;
 
-						if (g_pcvSteamIDESP->bValue) { //SteamID ESP
-							g_pDebugOverlay->AddEntityTextOverlay(i, 1, 1.0f, 200, 200, 200, 255, sPlayerInfo.steamid); //Draw text overlay on screen for this player entity
+					//If desired ignore teammates for drawing
+					if (g_pcvIgnoreTeammatesESP->bValue) {
+						player_data_s* pLocalPlayer = g_oPlayerMgr.Local();
+						if (pLocalPlayer) {
+							if (pLocalPlayer->iTeam == pPlayerData->iTeam)
+								continue;
 						}
+					}
+
+					register int iSlotCount = 0; //Used so there won't be empty slot lines
+
+					if (g_pcvNameESP->bValue) { //Name ESP
+						g_oPlayerMgr.DrawName(EID_TO_MID(i), iSlotCount); //Draw text overlay on screen for this player entity
+						iSlotCount++;
+					}
+
+					if (g_pcvSteamIDESP->bValue) { //SteamID ESP
+						g_oPlayerMgr.DrawSteamID(EID_TO_MID(i), iSlotCount); //Draw text overlay on screen for this player entity
+						iSlotCount++;
+					}
+
+					if (g_pcvDistanceESP->bValue) { //Distance ESP
+						g_oPlayerMgr.DrawDistance(EID_TO_MID(i), iSlotCount); //Draw text overlay on screen for this player entity
+						iSlotCount++;
 					}
 				}
 			}
