@@ -3,8 +3,8 @@ TigerSnail Hack: Source
 
 Developed by sk0r / Czybik
 
-Version: 0.1
-Contact: Czybik_Stylez<0x40>gmx<0x2E>de
+Version: 0.2
+Contact: Czybik_Stylez@gmx.de
 
 Description:
 	This project is a process-internal hack for the Source Engine and specifically for Counter-Strike: Global Offensive.
@@ -22,6 +22,8 @@ Features:
 		- IStudioRender
 		- IVDebugOverlay
 		- ISurface
+		- IGameEventManager2
+		- IGameEventListener2
 	+ Access to:
 		- appSystemFactory function
 		- Client exports
@@ -33,6 +35,7 @@ Features:
 		- IPanel instance
 		- ISurface instance
 		- ICVar instance
+		- IGameEventManager2 instance
 		- Games' IDirect3DDevice9 context
 	+ Hooks:
 		- CHLClient method(s)
@@ -54,6 +57,8 @@ Features:
 	+ Input manager
 	+ VFT hook manager
 	+ D3D renderer
+	+ Player manager
+	+ Game event handler
 	+ Log system
 	+ Delayed command manager
 	+ Engine drawing wrapper
@@ -62,6 +67,20 @@ Features:
 	+ Enhancements
 		- Name ESP
 		- SteamID ESP
+		- Distance ESP
+
+Changelog:
+	# Version 0.1
+		< Initial release >
+	# Version 0.2
+		- Extended _C_BaseEntity class definition
+		- Added _IGameEventManager2 and _IGameEventListener2 class definition
+		- Added access to IGameEventManager2 instance
+		- Added game event manager
+		- Added player manager
+		- Added distance ESP
+		- Added further ESP control CVars
+		- Fixed a bug of the VFT hook manager
 
 Credits:
 	sk0r / Czybik, OllyDbg, Source SDK
