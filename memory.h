@@ -9,7 +9,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.1
+	Version: 0.2
 	Visit: http://sk0r.sytes.net
 
 	File: memory.h: Memory interface 
