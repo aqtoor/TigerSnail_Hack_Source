@@ -6,7 +6,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.1
+	Version: 0.2
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -63,7 +63,7 @@ bool CVFTHookMgr::Add(const std::string& szIdent, const VFTPOINTER pClassBase, c
 		return false;
 
 	//Copy vft
-	memcpy(vftClass.pTableBackup, (const void*)*(VFTPOINTER*)pClassBase, uiVFTSize);
+	memcpy(vftClass.pTableBackup, (const void*)*(VFTPOINTER*)pClassBase, uiVFTSize * sizeof(VFTPOINTER));
 
 	//Save further data
 	vftClass.szIdent = szIdent;
