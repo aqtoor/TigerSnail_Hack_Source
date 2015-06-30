@@ -9,7 +9,7 @@
 #include "delayedclientcmd.h"
 #include "inputmgr.h"
 #include "czyconfigmgr.h"
-
+#include "players.h"
 
 /*
 	TigerSnail Hack: Source
@@ -17,7 +17,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.1
+	Version: 0.2
 	Visit: http://sk0r.sytes.net
 
 	File: vars.h: Data interface 
@@ -25,14 +25,14 @@
 
 //======================================================================
 #define PROGRAM_NAME "TigerSnail Hack: Source"
-#define PROGRAM_SHORTCUT "TSH"
-#define PROGRAM_VERSION "0.1"
+#define PROGRAM_SHORTCUT "TSHS"
+#define PROGRAM_VERSION "0.2"
 #define PROGRAM_AUTHOR "sk0r / Czybik"
 #define PROGRAM_CONTACT "Czybik_Stylez<0x40>gmx<0x2E>de"
 
 #define MAX_CHAR 250
 
-#define IMPORT_IFACE_AMOUNT 4
+#define IMPORT_IFACE_AMOUNT 5
 
 #define GAME_TARGET_WINDOW "Counter-Strike: Global Offensive"
 
@@ -45,7 +45,8 @@ enum {
 	ID_VEngineClient,
 	ID_VStudioRender,
 	ID_VDebugOverlay,
-	ID_VGUI_Surface
+	ID_VGUI_Surface,
+	ID_GameEventManager
 };
 //======================================================================
 
@@ -92,6 +93,7 @@ extern ICvar_Context_s g_ICvar_Ctx;
 extern _IVEngineClient* g_pEngineClient;
 extern _CClientEntityList* g_pClientEntityList;
 extern _IVDebugOverlay* g_pDebugOverlay;
+extern _IGameEventManager2* g_pGameEventManager;
 
 extern HWND g_hGameWindow;
 extern screensize_s g_ScreenSize;
@@ -99,14 +101,19 @@ extern screensize_s g_ScreenSize;
 extern bool g_bMapInit;
 extern bool g_bOnInitialize;
 extern bool g_bMenuToggle;
+extern bool g_bIsInGame;
 
 extern CLog* g_pLog;
 extern CVFTHookMgr g_oHookMgr;
 extern CDelayedClientCmd g_oDelayedClientCmd;
 extern CzyConfigMgr::CConfigInt g_oConfigInt;
+extern CPlayerMgr g_oPlayerMgr;
 
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvNameESP;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvSteamIDESP;
+extern CzyConfigMgr::CCVar::cvar_s* g_pcvDistanceESP;
+extern CzyConfigMgr::CCVar::cvar_s* g_pcvIgnoreTeammatesESP;
+extern CzyConfigMgr::CCVar::cvar_s* g_pcvColorModeESP;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvMenuKey;
 
 extern std::string g_szCurrentMapName;
