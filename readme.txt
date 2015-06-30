@@ -4,7 +4,7 @@ TigerSnail Hack: Source
 Developed by sk0r / Czybik
 
 Version: 0.2
-Contact: Czybik_Stylez@gmx.de
+Contact: Czybik_Stylez<0x40>gmx<0x2E>de
 
 Description:
 	This project is a process-internal hack for the Source Engine and specifically for Counter-Strike: Global Offensive.
