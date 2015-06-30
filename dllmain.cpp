@@ -15,7 +15,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.1
+	Version: 0.2
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -166,6 +166,9 @@ DWORD WINAPI SearchThread(LPVOID lpvArguments)
 
 	//Save IVDebugOverlay instance pointer
 	g_pDebugOverlay = (_IVDebugOverlay*)g_ClientImports[ID_VDebugOverlay].pInterfaceObject;
+
+	//Save IGameEventManager instance pointer
+	g_pGameEventManager = (_IGameEventManager2*)g_ClientImports[ID_GameEventManager].pInterfaceObject;
 	
 	//Initialize drawing
 	if (!SetupDrawingInterface(&g_ClientImports[ID_VGUI_Surface], "Verdana", 15))
