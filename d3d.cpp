@@ -10,7 +10,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.1
+	Version: 0.2
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -401,7 +401,7 @@ bool RegisterMenu(void)
 
 	static CzyVisualComponents::windowinfo_s sWindowInfo = { //Window info
 		200, 200, //x y
-		240, 87, //w h
+		240, 87 + 25 + 25 + 25, //w h
 		{
 			//Colors
 			{164, 190, 217, 255}, //Borders
@@ -460,6 +460,18 @@ bool RegisterMenu(void)
 	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbSteamIDESP", 5, 65, &sTextColor, &sBoxColor, &sHoverColor, "SteamID ESP", "esp_steamid", g_pcvSteamIDESP->bValue))
 		return false;
 
+	//Attach Checkbox
+	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbDistanceESP", 5, 90, &sTextColor, &sBoxColor, &sHoverColor, "Distance ESP", "esp_distance", g_pcvDistanceESP->bValue))
+		return false;
+
+	//Attach Checkbox
+	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbIgnoreTeammatesESP", 5, 115, &sTextColor, &sBoxColor, &sHoverColor, "Ignore Teammates", "esp_ignoreteammates", g_pcvIgnoreTeammatesESP->bValue))
+		return false;
+
+	//Attach Checkbox
+	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbColorModeESP", 5, 140, &sTextColor, &sBoxColor, &sHoverColor, "ESP Color Mode", "esp_colormode", g_pcvColorModeESP->iValue))
+		return false;
+
 	return true;
 }
 //======================================================================
@@ -473,6 +485,9 @@ bool RegisterCVars(void)
 
 	REG_CVAR(g_pcvNameESP, "esp_name", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
 	REG_CVAR(g_pcvSteamIDESP, "esp_steamid", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
+	REG_CVAR(g_pcvDistanceESP, "esp_distance", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
+	REG_CVAR(g_pcvIgnoreTeammatesESP, "esp_ignoreteammates", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
+	REG_CVAR(g_pcvColorModeESP, "esp_colormode", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "0");
 	REG_CVAR(g_pcvMenuKey, "key_menu", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "73");
 
 	return true;
