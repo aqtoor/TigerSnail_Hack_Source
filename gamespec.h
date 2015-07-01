@@ -15,7 +15,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.2
+	Version: 0.3
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -70,7 +70,7 @@
 
 //======================================================================
 #define DIFFERENCE_BETWEE_PUSH_AND_MOV 0x0B
-#define CHLCLIENT "VClient016"
+#define CHLCLIENT "VClient017"
 #define ICLIENTENTITYLIST "VClientEntityList003"
 #define IENGINECVAR "VEngineCvar007"
 #define CHLCLIENT_VFT_SIZE 84 //According to last method index
