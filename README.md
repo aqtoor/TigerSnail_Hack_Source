@@ -70,3 +70,7 @@ Changelog:
 	- Added distance ESP
 	- Added further ESP control CVars
 	- Fixed a bug of the VFT hook manager
+* Version 0.3
+	- CHLClient has been updated (now 017)
+	- Unified non-unified header comments (on some mail-info was missing)
+
