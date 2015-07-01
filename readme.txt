@@ -3,7 +3,7 @@ TigerSnail Hack: Source
 
 Developed by sk0r / Czybik
 
-Version: 0.2
+Version: 0.3
 Contact: Czybik_Stylez<0x40>gmx<0x2E>de
 
 Description:
@@ -81,6 +81,9 @@ Changelog:
 		- Added distance ESP
 		- Added further ESP control CVars
 		- Fixed a bug of the VFT hook manager
+	# Version 0.3
+		- CHLClient has been updated (now 017)
+		- Unified non-unified header comments (on some mail-info was missing)
 
 Credits:
 	sk0r / Czybik, OllyDbg, Source SDK
