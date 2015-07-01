@@ -17,8 +17,9 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.2
+	Version: 0.3
 	Visit: http://sk0r.sytes.net
+	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
 	File: vars.h: Data interface 
 */
@@ -26,7 +27,7 @@
 //======================================================================
 #define PROGRAM_NAME "TigerSnail Hack: Source"
 #define PROGRAM_SHORTCUT "TSHS"
-#define PROGRAM_VERSION "0.2"
+#define PROGRAM_VERSION "0.3"
 #define PROGRAM_AUTHOR "sk0r / Czybik"
 #define PROGRAM_CONTACT "Czybik_Stylez<0x40>gmx<0x2E>de"
 
