@@ -2,6 +2,7 @@
 #include "drawing.h"
 #include "viscomps.h"
 #include "d3d.h"
+#include "utils.h"
 #include <icliententitylist.h>
 #include <entitylist_base.h>
 
@@ -11,7 +12,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -19,7 +20,179 @@
 */
 
 //======================================================================
-CGameEventListener* pSampleEventListener = NULL;
+CGameEventListener* pDecoyStarted = NULL;
+CGameEventListener* pDecoyFiring = NULL;
+CGameEventListener* pDecoyDetonated = NULL;
+CGameEventListener* pPlayerFragged = NULL;
+CGameEventListener* pBombPlanted = NULL;
+CGameEventListener* pBombExploded = NULL;
+CGameEventListener* pBombDefused = NULL;
+CGameEventListener* pBombBeginDefusal = NULL;
+CGameEventListener* pBombAbortDefusal = NULL;
+CGameEventListener* pBombBeep = NULL;
+CGameEventListener* pBombDropped = NULL;
+CGameEventListener* pBombPickup = NULL;
+color24 sDecoyDefaultColor = {180, 238, 180};
+color24 sDecoyFiringColor = {255, 91, 107};
+CDecoyESP oDecoyESP(sDecoyDefaultColor, sDecoyFiringColor);
+//======================================================================
+
+//======================================================================
+void GameEvent_DecoyStarted(_IGameEvent* pEvent)
+{
+	//Game event function for 'decoy_started'
+
+	//Get data
+	int userid = pEvent->GetInt("userid");
+	int entityid = pEvent->GetInt("entityid");
+	float x = pEvent->GetFloat("x");
+	float y = pEvent->GetFloat("y");
+	float z = pEvent->GetFloat("z");
+	
+	//Add entry for this decoy
+	oDecoyESP.Add(Vector(x, y, z), userid, entityid);
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_DecoyFiring(_IGameEvent* pEvent)
+{
+	//Game event function for 'decoy_firing'
+
+	//Get data
+	int userid = pEvent->GetInt("userid");
+	int entityid = pEvent->GetInt("entityid");
+	float x = pEvent->GetFloat("x");
+	float y = pEvent->GetFloat("y");
+	float z = pEvent->GetFloat("z");
+
+	//Update status
+	oDecoyESP.UpdateStatus(entityid, CDecoyESP::DES_FIRING, Vector(x, y, z));
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_DecoyDetonated(_IGameEvent* pEvent)
+{
+	//Game event function for 'decoy_detonate'
+
+	//Get data
+	int userid = pEvent->GetInt("userid");
+	int entityid = pEvent->GetInt("entityid");
+	float x = pEvent->GetFloat("x");
+	float y = pEvent->GetFloat("y");
+	float z = pEvent->GetFloat("z");
+
+	//Update status
+	oDecoyESP.UpdateStatus(entityid, CDecoyESP::DES_EXPLODED, Vector(x, y, z));
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_PlayerFragged(_IGameEvent* pEvent)
+{
+	//Player fragging event
+	
+	player_data_s* pLocalData = g_oPlayerMgr.Local();
+	if (!pLocalData)
+		return;
+
+	//Get data
+	int userid = pEvent->GetInt("userid");
+	int attacker = pEvent->GetInt("attacker");
+	bool headshot = pEvent->GetBool("headshot");
+
+	//Check for selffrag and if attacker is not the local player
+	if ((userid == attacker) || (pLocalData->pEntity->m_iIndex != attacker - 1))
+		return;
+
+	//Update data
+
+	g_sAccuracy.iFrags++;
+
+	if (headshot) {
+		g_sAccuracy.iHeadshots++;
+	}
+
+	g_sAccuracy.iPercent = (float)g_sAccuracy.iHeadshots / g_sAccuracy.iFrags * 100;
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_BombPlanted(_IGameEvent* pEvent)
+{
+	//Game event function for 'bomb_planted'
+
+	g_sBombData.ucStatus = BOMB_PLANTED;
+	g_sBombData.wBombSpot = pEvent->GetInt("site");
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_BombBeep(_IGameEvent* pEvent)
+{
+	//Game event function for 'bomb_beep'
+
+	g_sBombData.iBombEntityIndex = pEvent->GetInt("entindex");
+	g_sBombData.pBombEntity = GetClientBaseEntity(g_sBombData.iBombEntityIndex);
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_BombExploded(_IGameEvent* pEvent)
+{
+	//Game event function for 'bomb_exploded'
+
+	memset(&g_sBombData, 0x00, sizeof(g_sBombData));
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_BombDefused(_IGameEvent* pEvent)
+{
+	//Game event function for 'bomb_defused'
+
+	memset(&g_sBombData, 0x00, sizeof(g_sBombData));
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_BeginDefusal(_IGameEvent* pEvent)
+{
+	//Game event function for 'bomb_begindefuse'
+
+	g_sBombData.bDefusalStarted = true;
+	g_sBombData.bWithDefKit = pEvent->GetBool("haskit");
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_AbortDefusal(_IGameEvent* pEvent)
+{
+	//Game event function for 'bomb_abortdefuse'
+
+	g_sBombData.bDefusalStarted = false;
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_BombDropped(_IGameEvent* pEvent)
+{
+	//Game event function for 'bomb_dropped'
+
+	g_sBombData.ucStatus = BOMB_DROPPED;
+	g_sBombData.iBombEntityIndex = pEvent->GetInt("entindex");
+	g_sBombData.pBombEntity = GetClientBaseEntity(g_sBombData.iBombEntityIndex);
+}
+//======================================================================
+
+//======================================================================
+void GameEvent_BombPickup(_IGameEvent* pEvent)
+{
+	//Game event function for 'bomb_pickup'
+
+	memset(&g_sBombData, 0x00, sizeof(g_sBombData));
+}
 //======================================================================
 
 //======================================================================
@@ -29,6 +202,20 @@ void SOURCEAPI OnInitialize(void)
 
 	//Get screen size
 	g_pEngineClient->GetScreenSize(g_ScreenSize.x, g_ScreenSize.y);
+
+	//Register infobox
+	if (!RegisterInfobox())
+		ExitError("RegisterInfobox() failed");
+
+	//Initialize Snake component
+	if (!InitSnakeGame())
+		ExitError("InitSnakeGame() failed");
+
+	//Center snake window to screen
+	g_oSnake.CenterToScreen(g_ScreenSize.x, g_ScreenSize.y);
+
+	//Set snake velocity
+	g_oSnake.SetVelocity(g_pcvSnakeVelocity->iValue);
 
 	//Reset player data
 	g_oPlayerMgr.Reset();
@@ -42,10 +229,20 @@ void SOURCEAPI OnInitialize(void)
 	if (!g_pGameEventManager->LoadEventsFromFile("resource/gameevents.res"))
 		ExitError("IGameEventManager::LoadEventsFromFile() failed");
 
-	//Register sample game event listener
-	pSampleEventListener = new CGameEventListener("player_spawn");
-	if (!pSampleEventListener)
-		ExitError("Failed to instantiate sample game event listener");
+	//Register game event listeners
+	#define REG_EVENT_LISTENER(p, e, n) p = new CGameEventListener(n, e); if (!p) ExitError("Failed to instantiate game event listener \'" #n "\'");
+	REG_EVENT_LISTENER(pDecoyStarted, &GameEvent_DecoyStarted, "decoy_started");
+	REG_EVENT_LISTENER(pDecoyFiring, &GameEvent_DecoyFiring, "decoy_firing");
+	REG_EVENT_LISTENER(pDecoyDetonated, &GameEvent_DecoyDetonated, "decoy_detonate");
+	REG_EVENT_LISTENER(pPlayerFragged, &GameEvent_PlayerFragged, "player_death");
+	REG_EVENT_LISTENER(pBombPlanted, &GameEvent_BombPlanted, "bomb_planted");
+	REG_EVENT_LISTENER(pBombExploded, &GameEvent_BombExploded, "bomb_exploded");
+	REG_EVENT_LISTENER(pBombDefused, &GameEvent_BombDefused, "bomb_defused");
+	REG_EVENT_LISTENER(pBombBeginDefusal, &GameEvent_BeginDefusal, "bomb_begindefuse");
+	REG_EVENT_LISTENER(pBombAbortDefusal, &GameEvent_AbortDefusal, "bomb_abortdefuse");
+	REG_EVENT_LISTENER(pBombBeep, &GameEvent_BombBeep, "bomb_beep");
+	REG_EVENT_LISTENER(pBombDropped, &GameEvent_BombDropped, "bomb_dropped");
+	REG_EVENT_LISTENER(pBombPickup, &GameEvent_BombPickup, "bomb_pickup");
 
 	//Inform via console
 	g_oDelayedClientCmd.AddClientCmd("clear", 1000);
@@ -66,6 +263,9 @@ void SOURCEAPI OnInitialize(void)
 	//Log status
 	g_pLog->Msg("OnInitialize(): job done");
 
+	//Reset playtime
+	g_oPlayTime.Reset();
+	
 	g_bOnInitialize = true; //Indicate that initialization has been done
 }
 //======================================================================
@@ -129,7 +329,18 @@ void SOURCEAPI Hook_Shutdown(void)
 	g_bMapInit = false; //Uninitialized
 
 	//Free memory
-	delete pSampleEventListener;
+	_delete(pDecoyStarted);
+	_delete(pDecoyFiring);
+	_delete(pDecoyDetonated);
+	_delete(pPlayerFragged);
+	_delete(pBombPlanted);
+	_delete(pBombExploded);
+	_delete(pBombDefused);
+	_delete(pBombBeginDefusal);
+	_delete(pBombAbortDefusal);
+	_delete(pBombBeep);
+	_delete(pBombDropped);
+	_delete(pBombPickup);
 }
 //======================================================================
 
@@ -208,6 +419,12 @@ void SOURCEAPI Hook_HudUpdate(bool bActive)
 			g_oPlayerMgr.UpdateSlot(i);
 		}
 	}
+
+	//Update playtime
+	g_oPlayTime.Think();
+
+	//Update infobox data
+	UpdateInfoboxData();
 }
 //======================================================================
 
@@ -221,8 +438,8 @@ int SOURCEAPI Hook_IN_KeyEvent(int eventcode, ButtonCode_t keynum, const char *p
 
 	//Static objects for class base and original method address pointer
 	SETUP_STATIC_OBJECTS_CHLCLIENT(FNI_IN_KeyEvent);
-
-	if (keynum == g_pcvMenuKey->iValue) { //Check if menu key has been toggled
+	
+	if (keynum == g_pcvMenuKey->iValue) { //Check if menu key has been used
 		g_bMenuToggle = !g_bMenuToggle; //Toggle indicator
 
 		//Set blocking mode
@@ -235,10 +452,31 @@ int SOURCEAPI Hook_IN_KeyEvent(int eventcode, ButtonCode_t keynum, const char *p
 		}
 
 		return 1; //Handled
+	} else if ((keynum == g_pcvSnakeKey->iValue) && (!g_bMenuToggle) && (eventcode)) { //Check if snake key has been used and menu is not shown
+		g_bSnakeToggle = !g_bSnakeToggle; //Toggle indicator
+		
+		//Set blocking mode
+		g_InputMgr.SetBlockMode(g_bSnakeToggle, true);
+
+		return 1; //Handled
+	} else if ((keynum == g_pcvInfoboxKey->iValue) && (eventcode)) { //Check if infobox key has been used
+		g_bInfoboxToggle = !g_bInfoboxToggle; //Toggle indicator
+		
+		if (g_bInfoboxToggle) {
+			g_pInfoBox->Show(); //Show if enabled
+		} else {
+			g_pInfoBox->Hide(); //Hide if disabled
+		}
+
+		return 1; //Handled
 	}
 
 	if (g_bMenuToggle) { //If menu is handled
 		g_pMainForm->KeyEvent(keynum, eventcode);
+
+		return 1; //Handled
+	} else if (g_bSnakeToggle) {
+		g_oSnake.KeyEvent(keynum, eventcode);
 
 		return 1; //Handled
 	}
@@ -329,22 +567,39 @@ void SOURCEAPI Hook_BeginFrame(void)
 
 					register int iSlotCount = 0; //Used so there won't be empty slot lines
 
-					if (g_pcvNameESP->bValue) { //Name ESP
+					//Name ESP
+					if (g_pcvNameESP->bValue) {
 						g_oPlayerMgr.DrawName(EID_TO_MID(i), iSlotCount); //Draw text overlay on screen for this player entity
 						iSlotCount++;
 					}
 
-					if (g_pcvSteamIDESP->bValue) { //SteamID ESP
+					//SteamID ESP
+					if (g_pcvSteamIDESP->bValue) {
 						g_oPlayerMgr.DrawSteamID(EID_TO_MID(i), iSlotCount); //Draw text overlay on screen for this player entity
 						iSlotCount++;
 					}
 
-					if (g_pcvDistanceESP->bValue) { //Distance ESP
+					//Distance ESP
+					if (g_pcvDistanceESP->bValue) {
 						g_oPlayerMgr.DrawDistance(EID_TO_MID(i), iSlotCount); //Draw text overlay on screen for this player entity
 						iSlotCount++;
 					}
+
+					//Health ESP
+					if (g_pcvHealthESP->bValue) {
+						g_oPlayerMgr.DrawHealth(EID_TO_MID(i), iSlotCount); //Draw text overlay on screen for this player entity
+					}
 				}
 			}
+		}
+
+		//Handle decoy thinking if feature is enabled
+		if (g_pcvDecoyESP->bValue)
+			oDecoyESP.Think();
+
+		//Handle bomb stuff
+		if ((g_pcvBombESP->bValue) && (g_sBombData.ucStatus > BOMB_UNKNOWN) && (g_sBombData.pBombEntity)) {
+			g_pDebugOverlay->AddTextOverlayRGB(g_sBombData.pBombEntity->m_vecAbsOrigin, 0, 1.0f, 238, 48, 167, 200, "Bomb");
 		}
 	}
 }
