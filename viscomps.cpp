@@ -6,7 +6,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -90,28 +90,32 @@ namespace CzyVisualComponents {
 		#define DRAW_LINE this->m_diInterface.TpfnDrawLine
 		#define BORDER_SIZE this->m_wndInfo.borderSize
 		#define TEXT_TO_BORDER_DIST this->m_wndInfo.textToBorderDist
-
+		
 		//Draw borders and the areas
-		DRAW_BOX(this->m_wndInfo.x, this->m_wndInfo.y, this->m_wndInfo.w, this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2, this->m_wndInfo.borderSize, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a); //Title box
-		DRAW_BOX(this->m_wndInfo.x, this->m_wndInfo.y + this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2 + this->m_wndInfo.boxDist, this->m_wndInfo.w, this->m_wndInfo.h - (this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2 + this->m_wndInfo.boxDist), this->m_wndInfo.borderSize, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a); //Body box
-		DRAW_AREA(this->m_wndInfo.x + this->m_wndInfo.borderSize, this->m_wndInfo.y + this->m_wndInfo.borderSize, this->m_wndInfo.w - this->m_wndInfo.borderSize, this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2 + this->m_wndInfo.borderSize, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Head fill
-		DRAW_AREA(this->m_wndInfo.x + this->m_wndInfo.borderSize, this->m_wndInfo.y + this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2 + this->m_wndInfo.boxDist + this->m_wndInfo.borderSize, this->m_wndInfo.w - this->m_wndInfo.borderSize, this->m_wndInfo.h - (this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2 + this->m_wndInfo.boxDist) - this->m_wndInfo.borderSize, this->m_wndInfo.colors.bodyfill.r, this->m_wndInfo.colors.bodyfill.g, this->m_wndInfo.colors.bodyfill.b, this->m_wndInfo.colors.bodyfill.a); //Body fill
+		//DRAW_BOX(this->m_wndInfo.x, this->m_wndInfo.y, this->m_wndInfo.w, this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2, this->m_wndInfo.borderSize, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a); //Title box
+		//DRAW_BOX(this->m_wndInfo.x, this->m_wndInfo.y + this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2 + this->m_wndInfo.boxDist, this->m_wndInfo.w, this->m_wndInfo.h - (this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2 + this->m_wndInfo.boxDist), this->m_wndInfo.borderSize, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a); //Body box
+		DRAW_AREA(this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize), this->m_wndInfo.y, this->m_wndInfo.w, SHELL_TOP_HEIGHT, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell top
+		DRAW_AREA(this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize), this->m_wndInfo.y, SHELL_LRB_SIZE, this->m_wndInfo.h, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell left
+		DRAW_AREA(this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize) + this->m_wndInfo.w - SHELL_LRB_SIZE, this->m_wndInfo.y, SHELL_LRB_SIZE, this->m_wndInfo.h, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell right
+		DRAW_AREA(this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize), this->m_wndInfo.y + this->m_wndInfo.h - SHELL_LRB_SIZE, this->m_wndInfo.w, SHELL_LRB_SIZE, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell bottom
+		DRAW_AREA(this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize) + SHELL_LRB_SIZE, this->m_wndInfo.y + SHELL_TOP_HEIGHT, this->m_wndInfo.w - SHELL_LRB_SIZE * 2, this->m_wndInfo.h - SHELL_TOP_HEIGHT - SHELL_LRB_SIZE, this->m_wndInfo.colors.bodyfill.r, this->m_wndInfo.colors.bodyfill.g, this->m_wndInfo.colors.bodyfill.b, this->m_wndInfo.colors.bodyfill.a); //Body fill
 		
 		//Draw show/hide toggle box
-		DRAW_BOX(this->m_raToggleBox.pos.a, this->m_raToggleBox.pos.b, this->m_raToggleBox.res.a, this->m_raToggleBox.res.b, this->m_wndInfo.borderSize, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a);
+		//DRAW_BOX(this->m_raToggleBox.pos.a, this->m_raToggleBox.pos.b, this->m_raToggleBox.res.a, this->m_raToggleBox.res.b, this->m_wndInfo.borderSize, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a);
 		//Draw show/hide toggle cross
 		//DRAW_LINE(this->m_raToggleBox.pos.a, this->m_raToggleBox.pos.b, this->m_raToggleBox.pos.a + this->m_raToggleBox.res.a, this->m_raToggleBox.pos.b + this->m_raToggleBox.res.b, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a);
 		//DRAW_LINE(this->m_raToggleBox.pos.a, this->m_raToggleBox.pos.b + this->m_raToggleBox.res.b, this->m_raToggleBox.pos.a + this->m_raToggleBox.res.a, this->m_raToggleBox.pos.b, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a);
+		DRAW_AREA(this->m_raToggleBox.pos.a, this->m_raToggleBox.pos.b, this->m_raToggleBox.res.a, this->m_raToggleBox.res.b, this->m_wndInfo.colors.closebox.r, this->m_wndInfo.colors.closebox.g, this->m_wndInfo.colors.closebox.b, (this->m_bToggleBoxHover) ? this->m_wndInfo.colors.closebox.a - 125: this->m_wndInfo.colors.closebox.a);
 		DRAW_TEXT("X", this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_raToggleBox.pos.a + (this->m_raToggleBox.res.a / 2 - this->m_wndInfo.fontSizeW / 2), this->m_raToggleBox.pos.b + (this->m_raToggleBox.res.b / 2 -  this->m_wndInfo.fontSizeH / 2), this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a);
 
 		#define CUBE_WIDTH this->m_wndInfo.cubeWidth
 		#define CUBE_HEIGHT this->m_wndInfo.cubeHeight
 
 		//Draw title cube
-		DRAW_AREA(this->m_wndInfo.x + CUBE_WIDTH / 2, this->m_wndInfo.y + this->m_wndInfo.borderSize + this->m_wndInfo.fontLineDist + ((this->m_wndInfo.fontSizeH + BORDER_SIZE * 2) / 2) - (CUBE_HEIGHT / 2), CUBE_WIDTH, CUBE_HEIGHT, this->m_wndInfo.colors.cube.r, this->m_wndInfo.colors.cube.g, this->m_wndInfo.colors.cube.b, this->m_wndInfo.colors.cube.a);
+		//DRAW_AREA(this->m_wndInfo.x + CUBE_WIDTH / 2, this->m_wndInfo.y + this->m_wndInfo.borderSize + this->m_wndInfo.fontLineDist + ((this->m_wndInfo.fontSizeH + BORDER_SIZE * 2) / 2) - (CUBE_HEIGHT / 2), CUBE_WIDTH, CUBE_HEIGHT, this->m_wndInfo.colors.cube.r, this->m_wndInfo.colors.cube.g, this->m_wndInfo.colors.cube.b, this->m_wndInfo.colors.cube.a);
 
 		//Draw box title
-		DRAW_TEXT(this->m_szText, this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_wndInfo.x + CUBE_WIDTH / 2 + this->m_wndInfo.fontCharDist + CUBE_WIDTH + CUBE_WIDTH / 2, this->m_wndInfo.y + this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontLineDist, this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
+		DRAW_TEXT(this->m_szText, this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize) + SHELL_LRB_SIZE, this->m_wndInfo.y + (SHELL_TOP_HEIGHT / 2 - this->m_wndInfo.fontSizeH / 2) + 1, this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
 		
 		//Signal attached components
 		for (size_t i = 0; i < this->m_vFormComponents.size(); i++) { //Loop through list
@@ -173,6 +177,12 @@ namespace CzyVisualComponents {
 				}
 			}
 		} else { //Mouse move event shall get handled
+			if ((x >= this->m_raToggleBox.pos.a) && (x <= this->m_raToggleBox.pos.a + this->m_raToggleBox.res.a) && (y >= this->m_raToggleBox.pos.b) && (y <= this->m_raToggleBox.pos.b + this->m_raToggleBox.res.b)) { //Check if inside toggle-button range
+				this->m_bToggleBoxHover = true;
+			} else {
+				this->m_bToggleBoxHover = false;
+			}
+
 			if (this->m_bFormMove) { //If form move event is triggered
 				this->SetLocation(x, y); //Reset location
 
@@ -471,6 +481,18 @@ namespace CzyVisualComponents {
 		this->m_bValue = false;
 
 		return true;
+	}
+
+	bool CCheckbox::SetValue(void* pValuePtr)
+	{
+		//Set cvar value
+
+		if (CBaseComponent::SetValue(pValuePtr, VT_BOOL)) {
+			this->m_bValue = this->m_pCVar->bValue;
+			return true;
+		}
+
+		return false;
 	}
 
 	void CCheckbox::Free(void)
@@ -969,7 +991,7 @@ namespace CzyVisualComponents {
 
 		if ((!pForm) || (!lpszText))
 			return NULL;
-
+		
 		//Allocate memory for component instance
 		CLabel* pLabel = new CLabel;
 		if (!pLabel)
@@ -981,7 +1003,7 @@ namespace CzyVisualComponents {
 			delete pLabel;
 			return false;
 		}
-
+		
 		//Set colors
 		menu_color_s mcColors = pWindowInfo->colors;
 		mcColors.title.r = r;
@@ -995,14 +1017,14 @@ namespace CzyVisualComponents {
 			delete pLabel;
 			return false;
 		}
-
+		
 		//Get owner location
 		const component_size_s* pLocation = pForm->GetLocation();
 		if (!pLocation) {
 			delete pLabel;
 			return false;
 		}
-
+		
 		//Call OnMove() event method initially
 		pLabel->OnMove(pLocation->a, pLocation->b);
 
@@ -1011,13 +1033,13 @@ namespace CzyVisualComponents {
 			delete pLabel;
 			return false;
 		}
-
+		
 		//Add to form
 		if (!pForm->AddVisualComponent(pLabel, NULL, NULL)) {
 			delete pLabel;
 			return false;
 		}
-
+		
 		//Set text if desired
 		if (lpszText) {
 			pLabel->SetText(lpszText);
