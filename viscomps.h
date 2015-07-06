@@ -11,7 +11,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -61,6 +61,7 @@ namespace CzyVisualComponents { //Visual components namespace
 
 	struct menu_color_s {
 		color32_s borders; //Color of borders
+		color32_s closebox; //Color of close box
 		color32_s headfill; //Color of head fill
 		color32_s bodyfill; //Color of body fill
 		color32_s cube; //Cube color
@@ -542,6 +543,9 @@ namespace CzyVisualComponents { //Visual components namespace
 	};
 
 	#define FORM_IDENT "form"
+	#define SHELL_TOP_HEIGHT 31
+	#define SHELL_LRB_SIZE 6
+	#define SHELL_TOP_CLOSERECT_WIDTH 30
 	class CForm : public CBaseComponent { //Main form component class
 	private:
 		struct form_component_s { //Form components
@@ -559,11 +563,13 @@ namespace CzyVisualComponents { //Visual components namespace
 		rectangle_s m_raToggleBox; //Rectangle info of toggle box
 		rectangle_s m_raTitleBar; //Rectangle info of title bar
 
+		bool m_bToggleBoxHover; //Whether mouse hovers over the toggle box
+
 		bool m_bFormMove; //If form shall get moved
 
 		void ResetFocus(size_t uiIdentOfFocusedComponent);
 	public:
-		CForm() { this->m_bFormMove = false; }
+		CForm() : m_bToggleBoxHover(false) { this->m_bFormMove = false; }
 		~CForm() { }
 
 		bool Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
@@ -627,10 +633,10 @@ namespace CzyVisualComponents { //Visual components namespace
 			this->m_raTitleBar.res.a = this->m_wndInfo.w - this->m_wndInfo.borderSize - (this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist);
 			this->m_raTitleBar.res.b = this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2;
 
-			this->m_raToggleBox.pos.a = this->m_wndInfo.x + this->m_wndInfo.w - (this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist);
-			this->m_raToggleBox.pos.b = this->m_wndInfo.y + this->m_wndInfo.borderSize * 2;
-			this->m_raToggleBox.res.a = this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist;
-			this->m_raToggleBox.res.b = this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist;
+			this->m_raToggleBox.pos.a = this->m_wndInfo.x + this->m_wndInfo.w - (SHELL_TOP_CLOSERECT_WIDTH + SHELL_LRB_SIZE + SHELL_LRB_SIZE + this->m_wndInfo.borderSize);
+			this->m_raToggleBox.pos.b = this->m_wndInfo.y + 1;
+			this->m_raToggleBox.res.a = SHELL_TOP_CLOSERECT_WIDTH;
+			this->m_raToggleBox.res.b = SHELL_TOP_HEIGHT - SHELL_LRB_SIZE;
 		}
 
 		void OnMouseMove(int x, int y) {} //Unused
@@ -663,7 +669,7 @@ namespace CzyVisualComponents { //Visual components namespace
 		void KeyEvent(int iKey, bool bDown) {} //Unused
 		void MouseEvent(int x, int y, int iMouseKey, bool bDown) {} //Unused
 
-		bool SetLocation(int x, int y) { return CBaseComponent::SetLocation(x, y, true); }
+		bool SetLocation(int x, int y) { return CBaseComponent::SetLocation(x, y, false); }
 		const component_size_s* GetLocation(void) { return CBaseComponent::GetLocation(); }
 		bool SetSize(int w, int h) { return true; } //Read-only
 		const component_size_s* GetSize(void) { return CBaseComponent::GetSize(); }
@@ -766,7 +772,7 @@ namespace CzyVisualComponents { //Visual components namespace
 
 		bool InComponentRange(int x, int y) { return CBaseComponent::InComponentRange(x, y); }
 
-		bool SetValue(void* pValuePtr) { return CBaseComponent::SetValue(pValuePtr, VT_BOOL); } //Unused
+		bool SetValue(void* pValuePtr);
 
 		bool NeedVariable(void) { return true; } //Checkbox needs a variable
 		bool NeedEventFunction(void) { return false; } //Checkbox doesn't need an alias
