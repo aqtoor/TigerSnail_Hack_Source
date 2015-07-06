@@ -6,14 +6,15 @@
 #include <d3dx9core.h>
 #include <DxErr.h>
 #include "viscomps.h"
+#include "snake.h"
 
 /*
-	TigerSnail Hack: Surce
+	TigerSnail Hack: Source
 
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -81,11 +82,16 @@ public:
 //======================================================================
 bool HookEndScene(void);
 IDirect3DDevice9* GetDeviceFromShader(void);
+bool RegisterInfobox(void);
+bool InitSnakeGame(void);
+void UpdateInfoboxData(void);
 //======================================================================
 
 //======================================================================
 extern CD3DRenderer g_oD3DRenderer;
 extern CzyVisualComponents::CForm* g_pMainForm;
+extern Snake::CSnake g_oSnake;
+extern CzyVisualComponents::CForm* g_pInfoBox;
 //======================================================================
 
 #endif
