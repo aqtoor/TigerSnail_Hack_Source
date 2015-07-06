@@ -10,7 +10,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -22,6 +22,8 @@ IDirect3DDevice9* pD3DDeviceFromGame = NULL;
 TpfnOrigEndScene pfnOrigEndScene = NULL;
 CD3DRenderer g_oD3DRenderer;
 CzyVisualComponents::CForm* g_pMainForm = NULL;
+Snake::CSnake g_oSnake;
+CzyVisualComponents::CForm* g_pInfoBox = NULL;
 //======================================================================
 
 //======================================================================
@@ -401,12 +403,13 @@ bool RegisterMenu(void)
 
 	static CzyVisualComponents::windowinfo_s sWindowInfo = { //Window info
 		200, 200, //x y
-		240, 87 + 25 + 25 + 25, //w h
+		240, 87 + 25 + 25 + 25 + 25 + 25 + 25 + 8, //w h
 		{
 			//Colors
-			{164, 190, 217, 255}, //Borders
-			{170, 170, 170, 250}, //Headfill
-			{200, 200, 200, 200}, //Bodyfill
+			{0, 0, 0, 255}, //Borders
+			{255, 210, 225, 255}, //Closebox
+			{135, 206, 250, 250}, //Headfill
+			{240, 240, 240, 250}, //Bodyfill
 			{50, 50, 50, 200},	//Cube
 			{0, 0, 0, 250},	// Title
 		},
@@ -434,11 +437,11 @@ bool RegisterMenu(void)
 	};
 
 	static CzyVisualComponents::color32_s sBoxColor = {
-		255, 255, 225, 255
+		255, 255, 255, 255
 	};
 
 	static CzyVisualComponents::color32_s sHoverColor = {
-		220, 220, 220, 255
+		255, 255, 225, 255
 	};
 
 	//Create the form
@@ -465,14 +468,148 @@ bool RegisterMenu(void)
 		return false;
 
 	//Attach Checkbox
-	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbIgnoreTeammatesESP", 5, 115, &sTextColor, &sBoxColor, &sHoverColor, "Ignore Teammates", "esp_ignoreteammates", g_pcvIgnoreTeammatesESP->bValue))
+	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbHealthESP", 5, 115, &sTextColor, &sBoxColor, &sHoverColor, "Health ESP", "esp_health", g_pcvHealthESP->bValue))
 		return false;
 
 	//Attach Checkbox
-	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbColorModeESP", 5, 140, &sTextColor, &sBoxColor, &sHoverColor, "ESP Color Mode", "esp_colormode", g_pcvColorModeESP->iValue))
+	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbDecoyESP", 5, 140, &sTextColor, &sBoxColor, &sHoverColor, "Decoy ESP", "esp_decoy", g_pcvDecoyESP->bValue))
+		return false;
+
+	//Attach Checkbox
+	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbBombESP", 5, 165, &sTextColor, &sBoxColor, &sHoverColor, "Bomb ESP", "esp_bomb", g_pcvBombESP->bValue))
+		return false;
+
+	//Attach Checkbox
+	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbIgnoreTeammatesESP", 5, 190, &sTextColor, &sBoxColor, &sHoverColor, "Ignore Teammates", "esp_ignoreteammates", g_pcvIgnoreTeammatesESP->bValue))
+		return false;
+
+	//Attach Checkbox
+	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbColorModeESP", 5, 215, &sTextColor, &sBoxColor, &sHoverColor, "ESP Color Mode", "esp_colormode", g_pcvColorModeESP->iValue))
 		return false;
 
 	return true;
+}
+//======================================================================
+
+//======================================================================
+bool RegisterInfobox(void)
+{
+	//Register infobox
+
+	static CzyVisualComponents::windowinfo_s sWindowInfo = { //Window info
+		200, 200, //x y
+		210, 87 + 25 + 25 + 25 + 8, //w h
+		{
+			//Colors
+			{0, 0, 0, 255}, //Borders
+			{255, 210, 225, 255}, //Closebox
+			{135, 206, 250, 200}, //Headfill
+			{240, 240, 240, 150}, //Bodyfill
+			{50, 50, 50, 200},	//Cube
+			{0, 0, 0, 250},	// Title
+		},
+		2, //Border size
+		7, 15, //Font size (w h)
+		0, //Font char dist
+		5, //Font line dist
+		5, //Box dist
+		10, 10, //Cube size (w h)
+		"Verdana" //Default font face
+	};
+
+	static CzyVisualComponents::drawinginterface_s sDrawingInterface = { //Drawing interface table
+		D3DI_PrintText,
+		D3DI_DrawText,
+		D3DI_DrawBox,
+		D3DI_DrawFilledBox,
+		D3DI_DrawLine,
+		D3DI_LoadImage,
+		D3DI_DrawImage
+	};
+
+	static CzyVisualComponents::color32_s sTextColor = {
+		0, 0, 0, 150
+	};
+
+	sWindowInfo.x = g_ScreenSize.x - sWindowInfo.w - 30;
+	sWindowInfo.y = g_ScreenSize.y / 2 - sWindowInfo.h / 2;
+	
+	//Create the form
+	g_pInfoBox = CzyVisualComponents::CreateForm("frmInfobox", &sWindowInfo, &sDrawingInterface);
+	if (!g_pInfoBox)
+		return false;
+	
+	//Set location data
+	g_pInfoBox->SetLocation(sWindowInfo.x, sWindowInfo.y);
+
+	//Set menu title text
+	g_pInfoBox->SetText(PROGRAM_SHORTCUT " Infobox");
+
+	//Attach label
+	if (!CzyVisualComponents::AttachLabel(g_pInfoBox, "lblVersion", 5, 40, 0, 0, 0, 150, "Version: " PROGRAM_VERSION))
+		return false;
+
+	//Attach label
+	if (!CzyVisualComponents::AttachLabel(g_pInfoBox, "lblDate", 5, 65, 0, 0, 0, 150, "(not updated)"))
+		return false;
+	
+	//Attach label
+	if (!CzyVisualComponents::AttachLabel(g_pInfoBox, "lblTime", 5, 90, 0, 0, 0, 150, "(not updated)"))
+		return false;
+
+	//Attach label
+	if (!CzyVisualComponents::AttachLabel(g_pInfoBox, "lblPlayTime", 5, 115, 0, 0, 0, 150, "(not updated)"))
+		return false;
+
+	//Attach label
+	if (!CzyVisualComponents::AttachLabel(g_pInfoBox, "lblAccuracy", 5, 140, 0, 0, 0, 150, "(not updated)"))
+		return false;
+	
+	//Show infobox if indicated
+	if (g_bInfoboxToggle)
+		g_pInfoBox->Show();
+
+	return true;
+}
+//======================================================================
+
+//======================================================================
+bool InitSnakeGame(void)
+{
+	//Initialize Snake game component
+
+	static Snake::drawinginterface_s sDrawingInterface = {
+		D3DI_PrintText,
+		D3DI_DrawText,
+		D3DI_DrawBox,
+		D3DI_DrawFilledBox,
+		D3DI_DrawLine,
+		D3DI_LoadImage,
+		D3DI_DrawImage
+	};
+
+	static Snake::windowinfo_s sWindowInfo = {
+		200, 200, //x y
+		7, 15, //font w h
+		2, //font char dist
+		2, //font line dist
+		2, //border size
+		3, //border dist
+		10, 10, //cube w h
+		1, //label value dist
+		3, //right border offset
+		{164, 190, 217, 255}, //border color
+		{170, 170, 170, 255}, //headfill color
+		{200, 200, 200, 255}, //bodyfill color
+		{50, 50, 50, 255}, //title color
+		{0, 0, 0, 255}, //cube color
+		{0, 250, 0, 255}, //snakehead color
+		{0, 150, 0, 255}, //snakebody color
+		{150, 150, 0, 255}, //snakefood color
+		"Arial" //def font
+	};
+
+	return g_oSnake.Initialize(sDrawingInterface, sWindowInfo, 50, 5, "Verdana");
 }
 //======================================================================
 
@@ -486,11 +623,59 @@ bool RegisterCVars(void)
 	REG_CVAR(g_pcvNameESP, "esp_name", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
 	REG_CVAR(g_pcvSteamIDESP, "esp_steamid", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
 	REG_CVAR(g_pcvDistanceESP, "esp_distance", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
+	REG_CVAR(g_pcvHealthESP, "esp_health", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
+	REG_CVAR(g_pcvDecoyESP, "esp_decoy", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
+	REG_CVAR(g_pcvBombESP, "esp_bomb", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
 	REG_CVAR(g_pcvIgnoreTeammatesESP, "esp_ignoreteammates", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
 	REG_CVAR(g_pcvColorModeESP, "esp_colormode", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "0");
 	REG_CVAR(g_pcvMenuKey, "key_menu", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "73");
+	REG_CVAR(g_pcvSnakeKey, "key_snake", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "74");
+	REG_CVAR(g_pcvInfoboxKey, "key_infobox", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "75");
+	REG_CVAR(g_pcvSnakeVelocity, "snake_velocity", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "50");
 
 	return true;
+}
+//======================================================================
+
+//======================================================================
+void UpdateInfoboxData(void)
+{
+	//Update infobox data
+
+	std::string szCurDate(""), szCurTime("");
+	GetCurrentDateAndTime(szCurDate, szCurTime);
+
+	CzyVisualComponents::CLabel* plblDate = (CzyVisualComponents::CLabel*)g_pInfoBox->GetComponent("lblDate");
+	if (plblDate)
+		plblDate->SetText(std::string("Date: " + szCurDate).c_str());
+
+	CzyVisualComponents::CLabel* plblTime = (CzyVisualComponents::CLabel*)g_pInfoBox->GetComponent("lblTime");
+	if (plblTime)
+		plblTime->SetText(std::string("Time: " + szCurTime).c_str());
+
+	CzyVisualComponents::CLabel* plblPlayTime = (CzyVisualComponents::CLabel*)g_pInfoBox->GetComponent("lblPlayTime");
+	if (plblPlayTime)
+		plblPlayTime->SetText(std::string("Playtime: " + std::to_string((_ULonglong)g_oPlayTime.GetHours()) + "h " + std::to_string((_ULonglong)g_oPlayTime.GetMinutes()) + "m " + std::to_string((_ULonglong)g_oPlayTime.GetSeconds()) + "s").c_str());
+
+	CzyVisualComponents::CLabel* plblAccuracy = (CzyVisualComponents::CLabel*)g_pInfoBox->GetComponent("lblAccuracy");
+	if (plblAccuracy)
+		plblAccuracy->SetText(std::string("Headshots: " + std::to_string((_Longlong)g_sAccuracy.iHeadshots) + "/" + std::to_string((_Longlong)g_sAccuracy.iFrags) + " (" + std::to_string((_Longlong)g_sAccuracy.iPercent) + "%)").c_str());
+}
+//======================================================================
+
+//======================================================================
+void DrawCursor(void)
+{
+	//Draw cursor for menus
+
+	#define MENU_CURSOR_LENGTH 10
+	#define MENU_CURSOR_SIZE 2
+
+	int iCurCursorX = g_InputMgr.GetMouseX();
+	int iCurCursorY = g_InputMgr.GetMouseY();
+
+	g_oD3DRenderer.DrawFilledBox(iCurCursorX - MENU_CURSOR_LENGTH / 2, iCurCursorY, MENU_CURSOR_LENGTH + MENU_CURSOR_SIZE, MENU_CURSOR_SIZE, 255, 0, 0, 255);
+	g_oD3DRenderer.DrawFilledBox(iCurCursorX, iCurCursorY - MENU_CURSOR_LENGTH / 2, MENU_CURSOR_SIZE, MENU_CURSOR_LENGTH + MENU_CURSOR_SIZE, 255, 0, 0, 255);
 }
 //======================================================================
 
@@ -541,7 +726,15 @@ void WINAPI Event_EndScene(void)
 
 		//Register menu
 		if (!RegisterMenu())
-			ExitError("RegisterMenu() menu failed");
+			ExitError("RegisterMenu() failed");
+
+		//Initialize Snake component
+		//if (!InitSnakeGame())
+		//	ExitError("InitSnakeGame() failed");
+
+		//Register infobox
+		//if (!RegisterInfobox())
+		//	ExitError("RegisterInfobox() failed");
 
 		g_pLog->Msg("Graphical user interface has been created");
 	}
@@ -552,13 +745,41 @@ void WINAPI Event_EndScene(void)
 		g_pMainForm->Process();
 		g_pMainForm->Draw();
 
-		//Draw cursor
-		#define MENU_CURSOR_LENGTH 10
-		#define MENU_CURSOR_SIZE 2
-		int iCurCursorX = g_InputMgr.GetMouseX();
-		int iCurCursorY = g_InputMgr.GetMouseY();
-		g_oD3DRenderer.DrawFilledBox(iCurCursorX - MENU_CURSOR_LENGTH / 2, iCurCursorY, MENU_CURSOR_LENGTH + MENU_CURSOR_SIZE, MENU_CURSOR_SIZE, 255, 0, 0, 255);
-		g_oD3DRenderer.DrawFilledBox(iCurCursorX, iCurCursorY - MENU_CURSOR_LENGTH / 2, MENU_CURSOR_SIZE, MENU_CURSOR_LENGTH + MENU_CURSOR_SIZE, 255, 0, 0, 255);
+		DrawCursor();
+	//Handle snake stuff if currently shown
+	} else if ((g_bSnakeToggle) && (g_oSnake.IsReady())) {
+		g_oSnake.ProcessGame();
+		g_oSnake.Draw();
+
+		DrawCursor();
+	}
+
+	if (g_bIsInGame) {
+		//Handle infobox stuff if currently shown
+		if ((g_bInfoboxToggle) && (g_pInfoBox)) {
+			g_pInfoBox->Process();
+			g_pInfoBox->Draw();
+		}
+
+		//Handle bomb stuff
+		if ((g_pcvBombESP->bValue) && (g_sBombData.ucStatus == BOMB_PLANTED) && (g_sBombData.bDefusalStarted)) {
+			player_data_s* pLocalPlayer = g_oPlayerMgr.Local();
+			if ((pLocalPlayer) && (pLocalPlayer->pEntity) && (pLocalPlayer->pEntity->m_lifeState == LIFE_ALIVE)) {
+				color24 clrInfoColor = {200, 200, 200};
+
+				if (pLocalPlayer->pEntity->m_iTeamNum - 1 == PLAYER_TEAM_T) {
+					clrInfoColor.r = 255;
+					clrInfoColor.g = 0;
+					clrInfoColor.b = 0;
+				}
+
+				std::string szInfoText = "The bomb is being defused";
+				if (g_sBombData.bWithDefKit)
+					szInfoText += " (fast)";
+
+				g_oD3DRenderer.DrawString(szInfoText, "Verdana", 7, 15, g_ScreenSize.x / 2 - (szInfoText.length() / 2 * 7), 200, clrInfoColor.r, clrInfoColor.g, clrInfoColor.b, 150);
+			}
+		}
 	}
 }
 //======================================================================
