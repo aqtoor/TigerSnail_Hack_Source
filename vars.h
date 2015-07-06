@@ -10,6 +10,7 @@
 #include "inputmgr.h"
 #include "czyconfigmgr.h"
 #include "players.h"
+#include "timing.h"
 
 /*
 	TigerSnail Hack: Source
@@ -17,7 +18,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -27,7 +28,7 @@
 //======================================================================
 #define PROGRAM_NAME "TigerSnail Hack: Source"
 #define PROGRAM_SHORTCUT "TSHS"
-#define PROGRAM_VERSION "0.3"
+#define PROGRAM_VERSION "0.4"
 #define PROGRAM_AUTHOR "sk0r / Czybik"
 #define PROGRAM_CONTACT "Czybik_Stylez<0x40>gmx<0x2E>de"
 
@@ -48,6 +49,13 @@ enum {
 	ID_VDebugOverlay,
 	ID_VGUI_Surface,
 	ID_GameEventManager
+};
+
+//Bomb status
+enum {
+	BOMB_UNKNOWN = 0,
+	BOMB_PLANTED,
+	BOMB_DROPPED
 };
 //======================================================================
 
@@ -79,6 +87,21 @@ struct client_import_s {
 struct screensize_s {
 	int x, y;
 };
+
+struct accuracy_s {
+	int iFrags;
+	int iHeadshots;
+	int iPercent;
+};
+
+struct bomb_data_s {
+	byte ucStatus;
+	bool bDefusalStarted;
+	bool bWithDefKit;
+	_C_BaseEntity* pBombEntity;
+	int iBombEntityIndex;
+	short wBombSpot;
+};
 //======================================================================
 
 //======================================================================
@@ -102,6 +125,8 @@ extern screensize_s g_ScreenSize;
 extern bool g_bMapInit;
 extern bool g_bOnInitialize;
 extern bool g_bMenuToggle;
+extern bool g_bSnakeToggle;
+extern bool g_bInfoboxToggle;
 extern bool g_bIsInGame;
 
 extern CLog* g_pLog;
@@ -113,11 +138,21 @@ extern CPlayerMgr g_oPlayerMgr;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvNameESP;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvSteamIDESP;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvDistanceESP;
+extern CzyConfigMgr::CCVar::cvar_s* g_pcvHealthESP;
+extern CzyConfigMgr::CCVar::cvar_s* g_pcvDecoyESP;
+extern CzyConfigMgr::CCVar::cvar_s* g_pcvBombESP;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvIgnoreTeammatesESP;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvColorModeESP;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvMenuKey;
+extern CzyConfigMgr::CCVar::cvar_s* g_pcvSnakeKey;
+extern CzyConfigMgr::CCVar::cvar_s* g_pcvInfoboxKey;
+extern CzyConfigMgr::CCVar::cvar_s* g_pcvSnakeVelocity;
 
 extern std::string g_szCurrentMapName;
+
+extern CPlayTime g_oPlayTime;
+extern accuracy_s g_sAccuracy;
+extern bomb_data_s g_sBombData;
 //======================================================================
 
 //======================================================================
