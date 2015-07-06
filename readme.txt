@@ -3,7 +3,7 @@ TigerSnail Hack: Source
 
 Developed by sk0r / Czybik
 
-Version: 0.3
+Version: 0.4
 Contact: Czybik_Stylez<0x40>gmx<0x2E>de
 
 Description:
@@ -24,6 +24,7 @@ Features:
 		- ISurface
 		- IGameEventManager2
 		- IGameEventListener2
+		- IGameEvent
 	+ Access to:
 		- appSystemFactory function
 		- Client exports
@@ -68,6 +69,11 @@ Features:
 		- Name ESP
 		- SteamID ESP
 		- Distance ESP
+		- Health ESP
+		- Decoy ESP
+		- Bomb ESP
+	+ Infobox
+	+ Snake game
 
 Changelog:
 	# Version 0.1
@@ -84,6 +90,17 @@ Changelog:
 	# Version 0.3
 		- CHLClient has been updated (now 017)
 		- Unified non-unified header comments (on some mail-info was missing)
+	# Version 0.4
+		- Extended _C_BaseEntity class definition
+		- Redesigned the graphical look of the GUI form
+		- Added _IGameEvent class definition
+		- Completed manager for game events
+		- Added Decoy ESP
+		- Added Infobox
+		- Added Snake game
+		- Added bomb ESP
+		- Added health ESP
+		- Changed ESP color handling
 
 Credits:
 	sk0r / Czybik, OllyDbg, Source SDK
