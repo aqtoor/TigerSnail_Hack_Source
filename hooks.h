@@ -10,7 +10,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -44,12 +44,15 @@
 //======================================================================
 #define CEL_PROCEED_EVENT_HANDLING 0x2A
 
+typedef void (*TpfnGEL_Eventfunction)(_IGameEvent* pEvent);
+
 class CGameEventListener : public _IGameEventListener2 {
 private:
-	std::string szEventName;
+	std::string m_szEventName;
+	TpfnGEL_Eventfunction m_pfnEventFunc;
 public:
-	CGameEventListener() : szEventName("") {}
-	CGameEventListener(const std::string& szGameEventName) : szEventName(szGameEventName)
+	CGameEventListener() : m_szEventName("") {}
+	CGameEventListener(const std::string& szGameEventName, const TpfnGEL_Eventfunction pfnEventFunc) : m_szEventName(szGameEventName), m_pfnEventFunc(pfnEventFunc)
 	{
 		//Register game event listener
 
@@ -57,13 +60,13 @@ public:
 			ExitError("CGameEventListener::RegListener() failed");
 	}
 
-	virtual void HandleGameEvent(IGameEvent *pEvent)
+	virtual void HandleGameEvent(_IGameEvent *pEvent)
 	{
 		//Handle game event specific data here
 
 		if (pEvent) {
-			std::string szInfo = "echo \"[" + std::string(pEvent->GetName()) + "] Player \'" + std::to_string((_ULonglong)pEvent->GetInt("userid")) + "\' is being spawned\"";
-			g_pEngineClient->ClientCmd_Unrestricted(szInfo.c_str());
+			//Call event function
+			this->m_pfnEventFunc(pEvent);
 		}
 	}
 
@@ -81,10 +84,13 @@ public:
 		if (!g_pGameEventManager)
 			return false;
 
-		if (!this->szEventName.length())
+		if (!this->m_pfnEventFunc)
 			return false;
 
-		return g_pGameEventManager->AddListener(this, this->szEventName.c_str(), false);
+		if (!this->m_szEventName.length())
+			return false;
+
+		return g_pGameEventManager->AddListener(this, this->m_szEventName.c_str(), false);
 	}
 };
 //======================================================================
