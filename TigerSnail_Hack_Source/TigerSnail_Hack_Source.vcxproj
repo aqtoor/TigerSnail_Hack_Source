@@ -87,6 +87,8 @@
     <ClCompile Include="..\log.cpp" />
     <ClCompile Include="..\memory.cpp" />
     <ClCompile Include="..\players.cpp" />
+    <ClCompile Include="..\snake.cpp" />
+    <ClCompile Include="..\timing.cpp" />
     <ClCompile Include="..\utils.cpp" />
     <ClCompile Include="..\vars.cpp" />
     <ClCompile Include="..\vfthook.cpp" />
@@ -104,6 +106,8 @@
     <ClInclude Include="..\log.h" />
     <ClInclude Include="..\memory.h" />
     <ClInclude Include="..\players.h" />
+    <ClInclude Include="..\snake.h" />
+    <ClInclude Include="..\timing.h" />
     <ClInclude Include="..\utils.h" />
     <ClInclude Include="..\vars.h" />
     <ClInclude Include="..\vfthook.h" />
