@@ -15,7 +15,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -645,7 +645,9 @@ public:
 	unsigned char __ucPadding_5[2];
 	int m_fEffects;
 	int m_iTeamNum;
-	char __ucPadding_6[80];
+	unsigned char __ucPadding_6[8];
+	int m_iHealth;
+	char __ucPadding_7[68];
 	EHANDLE m_hNetworkMoveParent, m_hOwnerEntity, m_hGroundEntity;
 	char m_iName[MAX_PATH];
 	short m_nModelIndex;
@@ -1089,7 +1091,7 @@ public:
 	*/
 
 	//Called when indicated that the event shall be handled
-	virtual void HandleGameEvent(IGameEvent *pEvent) = 0;
+	virtual void HandleGameEvent(abstract_class _IGameEvent *pEvent) = 0;
 
 	//Called to indicate whether 'HandleGameEvent' shall be called or not
 	virtual int IndicateEventHandling(void) = 0;
@@ -1135,6 +1137,30 @@ public:
 
 	// create new KeyValues, must be deleted
 	virtual IGameEvent *UnserializeEvent( bf_read *buf ) = 0;
+};
+
+abstract_class _IGameEvent
+{
+public:
+	virtual ~_IGameEvent() {};
+	virtual const char *GetName() const = 0;	// get event name
+
+	virtual bool  IsReliable() const = 0; // if event handled reliable
+	virtual bool  IsLocal() const = 0; // if event is never networked
+	virtual bool  IsEmpty(const char *keyName = NULL) = 0; // check if data field exists
+	
+	// Data access
+	virtual bool  GetBool(const char *keyName = NULL, bool defaultValue = false) = 0;
+	virtual int   GetInt(const char *keyName = NULL, int defaultValue = 0) = 0;
+	virtual __int64 GetInt64(const char *keyName = NULL, __int64 defaultValue = 0) = 0;
+	virtual float GetFloat(const char *keyName = NULL, float defaultValue = 0.0f) = 0;
+	virtual const char *GetString(const char *keyName = NULL, const char *defaultValue = "") = 0;
+	virtual void* __Unknown_1(const char *keyName = NULL, const char *defaultValue = "") = 0;
+
+	virtual void SetBool(const char *keyName, bool value) = 0;
+	virtual void SetInt(const char *keyName, int value) = 0;
+	virtual void SetFloat(const char *keyName, float value) = 0;
+	virtual void SetString(const char *keyName, const char *value) = 0;
 };
 //======================================================================
 
