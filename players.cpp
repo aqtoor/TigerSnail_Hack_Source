@@ -8,7 +8,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -291,7 +291,7 @@ bool CPlayerMgr::DrawInfo(const MPLAYERID uiEntIndex, const std::string& szText,
 //======================================================================*/
 
 //======================================================================
-bool CPlayerMgr::DrawInfo(const MPLAYERID uiEntIndex, const std::string& szText, const byte ucLineId)
+bool CPlayerMgr::DrawInfo(const MPLAYERID uiEntIndex, const std::string& szText, const byte ucLineId, const color32_s& clrColor)
 {
 	//Draw info string to this player
 
@@ -310,23 +310,28 @@ bool CPlayerMgr::DrawInfo(const MPLAYERID uiEntIndex, const std::string& szText,
 
 	color24 sDrawingColor;
 
-	//Set drawing text color
-	if ((pLocalPlayer->iTeam != this->m_sPlayerData[uiEntIndex].iTeam) && (this->m_sPlayerData[uiEntIndex].bVisible)) {
-		//If this player is not in the same team of local player and is visible then use belonging color
-		sDrawingColor = this->m_sTeamColors[PLAYER_TEAM_VISIBLE];
-	} else { //Use team related color
-		if ((g_pcvColorModeESP) && (!g_pcvColorModeESP->iValue)) { //Check if team color shall be used
-			sDrawingColor = this->m_sTeamColors[this->m_sPlayerData[uiEntIndex].pEntity->m_iTeamNum - 1];
-		} else { //Team context related color shall be used
-			if (pLocalPlayer->iTeam != this->m_sPlayerData[uiEntIndex].iTeam)
-				sDrawingColor = this->MakeColor24(255, 0, 0); //Opponent team color
-			else
-				sDrawingColor = this->MakeColor24(200, 200, 200); //Own team color
+	if (clrColor.a > 0) { //Set drawing text color if there shall not be a color overwrite
+		if ((pLocalPlayer->iTeam != this->m_sPlayerData[uiEntIndex].iTeam) && (this->m_sPlayerData[uiEntIndex].bVisible)) {
+			//If this player is not in the same team of local player and is visible then use belonging color
+			sDrawingColor = this->m_sTeamColors[PLAYER_TEAM_VISIBLE];
+		} else { //Use team related color
+			if ((g_pcvColorModeESP) && (!g_pcvColorModeESP->iValue)) { //Check if team color shall be used
+				sDrawingColor = this->m_sTeamColors[this->m_sPlayerData[uiEntIndex].pEntity->m_iTeamNum - 1];
+			} else { //Team context related color shall be used
+				if (pLocalPlayer->iTeam != this->m_sPlayerData[uiEntIndex].iTeam)
+					sDrawingColor = this->MakeColor24(255, 0, 0); //Opponent team color
+				else
+					sDrawingColor = this->MakeColor24(244, 164, 97); //Own team color
+			}
 		}
+	} else { //User color overwrite
+		sDrawingColor.r = clrColor.r;
+		sDrawingColor.g = clrColor.g;
+		sDrawingColor.b = clrColor.b;
 	}
 
 	//Add overlay text to player entity
-	g_pDebugOverlay->AddEntityTextOverlay(this->m_sPlayerData[uiEntIndex].iEngineId, ucLineId, 1.0f, sDrawingColor.r, sDrawingColor.g, sDrawingColor.b, 255, szText.c_str());
+	g_pDebugOverlay->AddEntityTextOverlay(this->m_sPlayerData[uiEntIndex].iEngineId, ucLineId, 1.0f, sDrawingColor.r, sDrawingColor.g, sDrawingColor.b, 255, "%s", szText.c_str());
 
 	return true;
 }
@@ -346,7 +351,7 @@ bool CPlayerMgr::DrawName(const MPLAYERID uiEntIndex, const byte ucLineId/*, con
 		return false;
 
 	//Draw name
-	return this->DrawInfo(uiEntIndex, this->m_sPlayerData[uiEntIndex].sHudInfo.name, ucLineId/*, bCentered*/);
+	return this->DrawInfo(uiEntIndex, this->m_sPlayerData[uiEntIndex].sHudInfo.name, ucLineId, COLOR_OVERWRITE_NO/*, bCentered*/);
 }
 //======================================================================
 
@@ -374,10 +379,10 @@ bool CPlayerMgr::DrawDistance(const MPLAYERID uiEntIndex, const byte ucLineId/*,
 		return false;
 
 	//Convert to string
-	std::string szText = std::to_string((_ULonglong)(int)fDistance);
+	std::string szText = std::to_string((_ULonglong)(int)(fDistance / 10));
 
 	//Draw distance
-	return this->DrawInfo(uiEntIndex, szText, ucLineId/*, bCentered*/);
+	return this->DrawInfo(uiEntIndex, szText, ucLineId, (ucLineId > 0) ? COLOR_OVERWRITE_GREY : COLOR_OVERWRITE_NO/*, bCentered*/);
 }
 //======================================================================
 
@@ -395,7 +400,7 @@ bool CPlayerMgr::DrawWeapon(const MPLAYERID uiEntIndex, const byte ucLineId/*, c
 		return false;
 
 	//Draw weapon
-	return this->DrawInfo(uiEntIndex, this->m_sPlayerData[uiEntIndex].szCurWeapon, ucLineId/*, bCentered*/);
+	return this->DrawInfo(uiEntIndex, this->m_sPlayerData[uiEntIndex].szCurWeapon, ucLineId, (ucLineId > 0) ? COLOR_OVERWRITE_GREY : COLOR_OVERWRITE_NO/*, bCentered*/);
 }
 //======================================================================
 
@@ -413,6 +418,41 @@ bool CPlayerMgr::DrawSteamID(const MPLAYERID uiEntIndex, const byte ucLineId/*, 
 		return false;
 
 	//Draw SteamID
-	return this->DrawInfo(uiEntIndex, this->m_sPlayerData[uiEntIndex].sHudInfo.steamid, ucLineId/*, bCentered*/);
+	return this->DrawInfo(uiEntIndex, this->m_sPlayerData[uiEntIndex].sHudInfo.steamid, ucLineId, (ucLineId > 0) ? COLOR_OVERWRITE_GREY : COLOR_OVERWRITE_NO/*, bCentered*/);
+}
+//======================================================================
+
+//======================================================================
+bool CPlayerMgr::DrawHealth(const MPLAYERID uiEntIndex, const byte ucLineId/*, const bool bCentered*/)
+{
+	//Draw health of this player
+
+	//Validate index and entity
+
+	if (!VALID_MID(uiEntIndex))
+		return false;
+
+	if (!this->IsPlaying(uiEntIndex))
+		return false;
+
+	//Setup string
+	std::string szHealthText = std::to_string((_Longlong)this->m_sPlayerData[uiEntIndex].pEntity->m_iHealth) + "%%";
+
+	//Setup color
+	color32_s sHealthColor = {0, 255, 0, 0};
+	if (ucLineId > 0) {
+		if (this->m_sPlayerData[uiEntIndex].pEntity->m_iHealth <= 35) {
+			sHealthColor.r = 255;
+			sHealthColor.g = 0;
+			sHealthColor.b = 0;
+		} else if (this->m_sPlayerData[uiEntIndex].pEntity->m_iHealth <= 75) {
+			sHealthColor.r = 255;
+			sHealthColor.g = 255;
+			sHealthColor.b = 0;
+		}
+	}
+
+	//Draw health
+	return this->DrawInfo(uiEntIndex, szHealthText, ucLineId, (ucLineId > 0) ? sHealthColor : COLOR_OVERWRITE_NO/*, bCentered*/);
 }
 //======================================================================
