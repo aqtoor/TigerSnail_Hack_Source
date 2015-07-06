@@ -9,7 +9,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -135,8 +135,11 @@ bool CInputMgr::Event_SetViewAngles(QAngle& vViewAngles)
 		if (this->m_ptCurrentMousePos.y > g_ScreenSize.y)
 			this->m_ptCurrentMousePos.y = g_ScreenSize.y;
 
-		//Inform form about event
-		g_pMainForm->MouseEvent(this->m_ptCurrentMousePos.x, this->m_ptCurrentMousePos.y, -1, false);
+		//Inform enabled component about event
+		if (g_bMenuToggle)
+			g_pMainForm->MouseEvent(this->m_ptCurrentMousePos.x, this->m_ptCurrentMousePos.y, -1, false);
+		else if (g_bSnakeToggle)
+			g_oSnake.MouseEvent(this->m_ptCurrentMousePos.x, this->m_ptCurrentMousePos.y, -1, false);
 
 		return false; //Indicate to block setting viewangles
 	} else {
@@ -168,13 +171,19 @@ LRESULT CALLBACK IPMGR_WindowProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM l
 			return 1L;
 		} else if (nCode == WM_LBUTTONDOWN) { //Left mouse button event shall also get blocked if they occur
 			//Inform form about event
-			g_pMainForm->MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_LBUTTON, true);
+			if (g_bMenuToggle)
+				g_pMainForm->MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_LBUTTON, true);
+			else if (g_bSnakeToggle)
+				g_oSnake.MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_LBUTTON, true);
 
 			//Prevent original window procedure from handling the event
 			return 1L;
 		} else if (nCode == WM_LBUTTONUP) { //Left mouse button event shall also get blocked if they occur
 			//Inform form about event
-			g_pMainForm->MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_LBUTTON, false);
+			if (g_bMenuToggle)
+				g_pMainForm->MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_LBUTTON, false);
+			else if (g_bSnakeToggle)
+				g_oSnake.MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_LBUTTON, false);
 
 			//Prevent original window procedure from handling the event
 			return 1L;
