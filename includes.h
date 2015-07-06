@@ -7,6 +7,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <ctime>
 #include <Windows.h>
 
 /*
@@ -15,11 +16,15 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.3
+	Version: 0.4
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
-	File: includes.h: General include files 
+	File: includes.h: General include files and definitions
 */
+
+//======================================================================
+#define _delete(p) delete p; p = NULL;
+//======================================================================
 
 #endif
