@@ -6,7 +6,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -17,7 +17,7 @@ namespace CzyVisualComponents {
 
 	/* CForm methods */
 
-	bool CForm::Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
+	bool CForm::Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
 	{
 		//Initialize base data
 
@@ -26,7 +26,7 @@ namespace CzyVisualComponents {
 			return true;
 
 		//Call base component Initialize() method
-		if (!CBaseComponent::Initialize(lpszIdent, lpszName, pWindowInfo, pDrawingInterface))
+		if (!CBaseComponent::Initialize(CZYVC_FORM_IDENT, lpszName, pWindowInfo, pDrawingInterface))
 			return false;
 
 		//Save rectangle info
@@ -94,11 +94,11 @@ namespace CzyVisualComponents {
 		//Draw borders and the areas
 		//DRAW_BOX(this->m_wndInfo.x, this->m_wndInfo.y, this->m_wndInfo.w, this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2, this->m_wndInfo.borderSize, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a); //Title box
 		//DRAW_BOX(this->m_wndInfo.x, this->m_wndInfo.y + this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2 + this->m_wndInfo.boxDist, this->m_wndInfo.w, this->m_wndInfo.h - (this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2 + this->m_wndInfo.boxDist), this->m_wndInfo.borderSize, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a); //Body box
-		DRAW_AREA(this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize), this->m_wndInfo.y, this->m_wndInfo.w, SHELL_TOP_HEIGHT, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell top
-		DRAW_AREA(this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize), this->m_wndInfo.y, SHELL_LRB_SIZE, this->m_wndInfo.h, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell left
-		DRAW_AREA(this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize) + this->m_wndInfo.w - SHELL_LRB_SIZE, this->m_wndInfo.y, SHELL_LRB_SIZE, this->m_wndInfo.h, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell right
-		DRAW_AREA(this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize), this->m_wndInfo.y + this->m_wndInfo.h - SHELL_LRB_SIZE, this->m_wndInfo.w, SHELL_LRB_SIZE, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell bottom
-		DRAW_AREA(this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize) + SHELL_LRB_SIZE, this->m_wndInfo.y + SHELL_TOP_HEIGHT, this->m_wndInfo.w - SHELL_LRB_SIZE * 2, this->m_wndInfo.h - SHELL_TOP_HEIGHT - SHELL_LRB_SIZE, this->m_wndInfo.colors.bodyfill.r, this->m_wndInfo.colors.bodyfill.g, this->m_wndInfo.colors.bodyfill.b, this->m_wndInfo.colors.bodyfill.a); //Body fill
+		DRAW_AREA(this->m_wndInfo.x - (CZYVC_SHELL_LRB_SIZE + this->m_wndInfo.borderSize), this->m_wndInfo.y, this->m_wndInfo.w, CZYVC_SHELL_TOP_HEIGHT, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell top
+		DRAW_AREA(this->m_wndInfo.x - (CZYVC_SHELL_LRB_SIZE + this->m_wndInfo.borderSize), this->m_wndInfo.y, CZYVC_SHELL_LRB_SIZE, this->m_wndInfo.h, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell left
+		DRAW_AREA(this->m_wndInfo.x - (CZYVC_SHELL_LRB_SIZE + this->m_wndInfo.borderSize) + this->m_wndInfo.w - CZYVC_SHELL_LRB_SIZE, this->m_wndInfo.y, CZYVC_SHELL_LRB_SIZE, this->m_wndInfo.h, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell right
+		DRAW_AREA(this->m_wndInfo.x - (CZYVC_SHELL_LRB_SIZE + this->m_wndInfo.borderSize), this->m_wndInfo.y + this->m_wndInfo.h - CZYVC_SHELL_LRB_SIZE, this->m_wndInfo.w, CZYVC_SHELL_LRB_SIZE, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a); //Shell bottom
+		DRAW_AREA(this->m_wndInfo.x - (CZYVC_SHELL_LRB_SIZE + this->m_wndInfo.borderSize) + CZYVC_SHELL_LRB_SIZE, this->m_wndInfo.y + CZYVC_SHELL_TOP_HEIGHT, this->m_wndInfo.w - CZYVC_SHELL_LRB_SIZE * 2, this->m_wndInfo.h - CZYVC_SHELL_TOP_HEIGHT - CZYVC_SHELL_LRB_SIZE, this->m_wndInfo.colors.bodyfill.r, this->m_wndInfo.colors.bodyfill.g, this->m_wndInfo.colors.bodyfill.b, this->m_wndInfo.colors.bodyfill.a); //Body fill
 		
 		//Draw show/hide toggle box
 		//DRAW_BOX(this->m_raToggleBox.pos.a, this->m_raToggleBox.pos.b, this->m_raToggleBox.res.a, this->m_raToggleBox.res.b, this->m_wndInfo.borderSize, this->m_wndInfo.colors.borders.r, this->m_wndInfo.colors.borders.g, this->m_wndInfo.colors.borders.b, this->m_wndInfo.colors.borders.a);
@@ -115,7 +115,7 @@ namespace CzyVisualComponents {
 		//DRAW_AREA(this->m_wndInfo.x + CUBE_WIDTH / 2, this->m_wndInfo.y + this->m_wndInfo.borderSize + this->m_wndInfo.fontLineDist + ((this->m_wndInfo.fontSizeH + BORDER_SIZE * 2) / 2) - (CUBE_HEIGHT / 2), CUBE_WIDTH, CUBE_HEIGHT, this->m_wndInfo.colors.cube.r, this->m_wndInfo.colors.cube.g, this->m_wndInfo.colors.cube.b, this->m_wndInfo.colors.cube.a);
 
 		//Draw box title
-		DRAW_TEXT(this->m_szText, this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_wndInfo.x - (SHELL_LRB_SIZE + this->m_wndInfo.borderSize) + SHELL_LRB_SIZE, this->m_wndInfo.y + (SHELL_TOP_HEIGHT / 2 - this->m_wndInfo.fontSizeH / 2) + 1, this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
+		DRAW_TEXT(this->m_szText, this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_wndInfo.x - (CZYVC_SHELL_LRB_SIZE + this->m_wndInfo.borderSize) + CZYVC_SHELL_LRB_SIZE, this->m_wndInfo.y + (CZYVC_SHELL_TOP_HEIGHT / 2 - this->m_wndInfo.fontSizeH / 2) + 1, this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
 		
 		//Signal attached components
 		for (size_t i = 0; i < this->m_vFormComponents.size(); i++) { //Loop through list
@@ -311,7 +311,7 @@ namespace CzyVisualComponents {
 		//If text input is focused this method returns the string address to its value otherwise it returns NULL.
 
 		for (size_t i = 0; i < this->m_vFormComponents.size(); i++) {
-			if ((strcmp(this->m_vFormComponents[i].pComponent->GetIdentifier(), TEXTBOX_IDENT) == 0) && (this->m_vFormComponents[i].bHasFocus)) {
+			if ((strcmp(this->m_vFormComponents[i].pComponent->GetIdentifier(), CZYVC_TEXTBOX_IDENT) == 0) && (this->m_vFormComponents[i].bHasFocus)) {
 				return this->m_vFormComponents[i].pComponent->GetText();
 			}
 		}
@@ -322,7 +322,7 @@ namespace CzyVisualComponents {
 
 	/* CLabel methods */
 
-	bool CLabel::Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
+	bool CLabel::Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
 	{
 		//Initialize component
 
@@ -331,7 +331,7 @@ namespace CzyVisualComponents {
 			return true;
 
 		//Initialize base data
-		if (!CBaseComponent::Initialize(lpszIdent, lpszName, pWindowInfo, pDrawingInterface))
+		if (!CBaseComponent::Initialize(CZYVC_LABEL_IDENT, lpszName, pWindowInfo, pDrawingInterface))
 			return false;
 
 		//Reset text
@@ -367,7 +367,7 @@ namespace CzyVisualComponents {
 
 	/* CButton methods */
 
-	bool CButton::Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
+	bool CButton::Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
 	{
 		//Initialize component
 
@@ -376,7 +376,7 @@ namespace CzyVisualComponents {
 			return true;
 
 		//Initialize base data
-		if (!CBaseComponent::Initialize(lpszIdent, lpszName, pWindowInfo, pDrawingInterface))
+		if (!CBaseComponent::Initialize(CZYVC_BUTTON_IDENT, lpszName, pWindowInfo, pDrawingInterface))
 			return false;
 
 		//Reset strings
@@ -462,7 +462,7 @@ namespace CzyVisualComponents {
 
 	/* CCheckbox methods */
 
-	bool CCheckbox::Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
+	bool CCheckbox::Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
 	{
 		//Initialize component
 
@@ -471,7 +471,7 @@ namespace CzyVisualComponents {
 			return true;
 
 		//Initialize base data
-		if (!CBaseComponent::Initialize(lpszIdent, lpszName, pWindowInfo, pDrawingInterface))
+		if (!CBaseComponent::Initialize(CZYVC_CHECKBOX_IDENT, lpszName, pWindowInfo, pDrawingInterface))
 			return false;
 
 		//Reset text
@@ -566,7 +566,7 @@ namespace CzyVisualComponents {
 
 	/* CTextbox methods */
 
-	bool CTextbox::Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
+	bool CTextbox::Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
 	{
 		//Initialize component
 
@@ -575,7 +575,7 @@ namespace CzyVisualComponents {
 			return true;
 
 		//Initialize base data
-		if (!CBaseComponent::Initialize(lpszIdent, lpszName, pWindowInfo, pDrawingInterface))
+		if (!CBaseComponent::Initialize(CZYVC_TEXTBOX_IDENT, lpszName, pWindowInfo, pDrawingInterface))
 			return false;
 
 		//Reset text
@@ -603,7 +603,7 @@ namespace CzyVisualComponents {
 		//Update timers if gained focus
 		if (this->m_bGotFocus) {
 			this->m_dwTimerCur = GetTickCount(); //Get current elapsed milliseconds
-			if (this->m_dwTimerCur > this->m_dwTimerInit + TEXTBOX_DELAY) { //Check if time exceeded
+			if (this->m_dwTimerCur > this->m_dwTimerInit + CZYVC_TEXTBOX_DELAY) { //Check if time exceeded
 				this->m_dwTimerInit = GetTickCount(); //Refresh initial timer
 
 				this->m_bDrawUnderline = !this->m_bDrawUnderline; //Toggle indicator
@@ -625,7 +625,7 @@ namespace CzyVisualComponents {
 
 		//Draw text
 		if ((this->m_bGotFocus) && (this->m_bDrawUnderline)) {
-			char szText[VISCOMP_MAX_STRING_LEN];
+			char szText[CZYVC_MAX_STRING_LEN];
 			sprintf_s(szText, "%s_", this->m_szText);
 			DRAW_TEXT(szText, this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.boxDist + this->m_wndInfo.borderSize, this->m_lsOwnerLocation.b + this->m_lsLocation.b + (this->m_wndInfo.fontSizeH / 2) - (this->m_wndInfo.borderSize + this->m_wndInfo.borderSize / 2), this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
 		} else {
@@ -708,17 +708,17 @@ namespace CzyVisualComponents {
 	{
 		//Draw component
 
-		#define GROUPBOX_SECLINEDIST GROUPBOX_LINETOTEXTLEN + this->m_wndInfo.borderSize * 2 + (this->m_wndInfo.fontSizeW * (int)strlen(this->m_szText))
+		#define CZYVC_GROUPBOX_SECLINEDIST CZYVC_GROUPBOX_LINETOTEXTLEN + this->m_wndInfo.borderSize * 2 + (this->m_wndInfo.fontSizeW * (int)strlen(this->m_szText))
 
 		//Draw frame
-		this->m_diInterface.TpfnDrawBox(this->m_lsOwnerLocation.a + this->m_lsLocation.a, this->m_lsOwnerLocation.b + this->m_lsLocation.b, GROUPBOX_LINETOTEXTLEN, this->m_wndInfo.borderSize, this->m_wndInfo.borderSize, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a);
-		this->m_diInterface.TpfnDrawBox(this->m_lsOwnerLocation.a + this->m_lsLocation.a + GROUPBOX_SECLINEDIST, this->m_lsOwnerLocation.b + this->m_lsLocation.b, this->m_lsResolution.a - (GROUPBOX_SECLINEDIST), this->m_wndInfo.borderSize, this->m_wndInfo.borderSize, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a);
+		this->m_diInterface.TpfnDrawBox(this->m_lsOwnerLocation.a + this->m_lsLocation.a, this->m_lsOwnerLocation.b + this->m_lsLocation.b, CZYVC_GROUPBOX_LINETOTEXTLEN, this->m_wndInfo.borderSize, this->m_wndInfo.borderSize, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a);
+		this->m_diInterface.TpfnDrawBox(this->m_lsOwnerLocation.a + this->m_lsLocation.a + CZYVC_GROUPBOX_SECLINEDIST, this->m_lsOwnerLocation.b + this->m_lsLocation.b, this->m_lsResolution.a - (CZYVC_GROUPBOX_SECLINEDIST), this->m_wndInfo.borderSize, this->m_wndInfo.borderSize, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a);
 		this->m_diInterface.TpfnDrawBox(this->m_lsOwnerLocation.a + this->m_lsLocation.a, this->m_lsOwnerLocation.b + this->m_lsLocation.b, this->m_wndInfo.borderSize, this->m_lsResolution.b, this->m_wndInfo.borderSize, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a);
 		this->m_diInterface.TpfnDrawBox(this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a, this->m_lsOwnerLocation.b + this->m_lsLocation.b, this->m_wndInfo.borderSize, this->m_lsResolution.b + this->m_wndInfo.borderSize, this->m_wndInfo.borderSize, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a);
 		this->m_diInterface.TpfnDrawBox(this->m_lsOwnerLocation.a + this->m_lsLocation.a, this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_lsResolution.b, this->m_lsResolution.a, this->m_wndInfo.borderSize, this->m_wndInfo.borderSize, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a);
 		
 		//Draw text
-		this->m_diInterface.TpfnDrawText(this->m_szText, this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_lsOwnerLocation.a + this->m_lsLocation.a + GROUPBOX_LINETOTEXTLEN + this->m_wndInfo.borderSize, this->m_lsOwnerLocation.b + this->m_lsLocation.b - (this->m_wndInfo.fontSizeH / 2), this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
+		this->m_diInterface.TpfnDrawText(this->m_szText, this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_lsOwnerLocation.a + this->m_lsLocation.a + CZYVC_GROUPBOX_LINETOTEXTLEN + this->m_wndInfo.borderSize, this->m_lsOwnerLocation.b + this->m_lsLocation.b - (this->m_wndInfo.fontSizeH / 2), this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
 	}
 
 	/* CListbox methods */
@@ -734,14 +734,14 @@ namespace CzyVisualComponents {
 		if (this->m_uiDrawingIndex < this->m_vItems.size()) {
 			for (size_t i = 0; i < uiAmountOfItems; i++) {
 				if (this->m_uiDrawingIndex + i < this->m_vItems.size()) {
-					if ((x > this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize) && (x < this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize * 2 + this->m_lsResolution.a - LISTBOX_NAVIGATOR_WIDTH) && (y > this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize + ((int)i * this->m_wndInfo.fontSizeH)) && (y < this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize + ((int)i * this->m_wndInfo.fontSizeH) + this->m_wndInfo.fontSizeH)) {
+					if ((x > this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize) && (x < this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize * 2 + this->m_lsResolution.a - CZYVC_LISTBOX_NAVIGATOR_WIDTH) && (y > this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize + ((int)i * this->m_wndInfo.fontSizeH)) && (y < this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize + ((int)i * this->m_wndInfo.fontSizeH) + this->m_wndInfo.fontSizeH)) {
 						return this->m_uiDrawingIndex + i;
 					}
 				}
 			}
 		}
 
-		return LISTBOX_INVALID_ITEM_ID;
+		return CZYVC_LISTBOX_INVALID_ITEM_ID;
 	}
 
 	void CListbox::Draw(void)
@@ -753,9 +753,9 @@ namespace CzyVisualComponents {
 		this->m_diInterface.TpfnDrawFilledBox(this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize, this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize, this->m_lsResolution.a - this->m_wndInfo.borderSize, this->m_lsResolution.b - this->m_wndInfo.borderSize, this->m_wndInfo.colors.bodyfill.r, this->m_wndInfo.colors.bodyfill.g, this->m_wndInfo.colors.bodyfill.b, this->m_wndInfo.colors.bodyfill.a);
 
 		//Draw list navigator
-		this->DrawSalientBorder(this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 2, this->m_lsOwnerLocation.b + this->m_lsLocation.b, LISTBOX_NAVIGATOR_WIDTH, this->m_lsResolution.b);
-		this->m_diInterface.TpfnDrawText("U", this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3 + ((LISTBOX_NAVIGATOR_WIDTH / 2) - (this->m_wndInfo.fontSizeW / 2)), this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize, this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
-		this->m_diInterface.TpfnDrawText("D", this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3 + ((LISTBOX_NAVIGATOR_WIDTH / 2) - (this->m_wndInfo.fontSizeW / 2)), this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize + (this->m_lsResolution.b - this->m_wndInfo.borderSize - this->m_wndInfo.fontSizeH), this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
+		this->DrawSalientBorder(this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 2, this->m_lsOwnerLocation.b + this->m_lsLocation.b, CZYVC_LISTBOX_NAVIGATOR_WIDTH, this->m_lsResolution.b);
+		this->m_diInterface.TpfnDrawText("U", this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3 + ((CZYVC_LISTBOX_NAVIGATOR_WIDTH / 2) - (this->m_wndInfo.fontSizeW / 2)), this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize, this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
+		this->m_diInterface.TpfnDrawText("D", this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3 + ((CZYVC_LISTBOX_NAVIGATOR_WIDTH / 2) - (this->m_wndInfo.fontSizeW / 2)), this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize + (this->m_lsResolution.b - this->m_wndInfo.borderSize - this->m_wndInfo.fontSizeH), this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
 
 		//Get amount of items that suit into the listbox height
 		size_t uiAmountOfItems = (this->m_lsResolution.b - this->m_wndInfo.borderSize * 2) / this->m_wndInfo.fontSizeH; 
@@ -770,7 +770,7 @@ namespace CzyVisualComponents {
 					}
 
 					//Draw item text
-					char szItemText[VISCOMP_MAX_STRING_LEN];
+					char szItemText[CZYVC_MAX_STRING_LEN];
 					memset(szItemText, 0x00, sizeof(szItemText));
 					int iMaxChars = (this->m_lsResolution.a - this->m_wndInfo.borderSize * 2) / (this->m_wndInfo.fontSizeW + this->m_wndInfo.fontCharDist);
 					if (this->m_vItems[this->m_uiDrawingIndex + i].szExpression.length() < (size_t)iMaxChars)
@@ -791,10 +791,10 @@ namespace CzyVisualComponents {
 			//Get amount of items that suit into the listbox height
 			size_t uiAmountOfItems = (this->m_lsResolution.b - this->m_wndInfo.borderSize * 2) / this->m_wndInfo.fontSizeH; 
 
-			if ((x > this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3) && (x < this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3 + (LISTBOX_NAVIGATOR_WIDTH + this->m_wndInfo.borderSize * 2)) && (y > this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize) && (y < this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH)) { //Check if clicked the "up"-button
+			if ((x > this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3) && (x < this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3 + (CZYVC_LISTBOX_NAVIGATOR_WIDTH + this->m_wndInfo.borderSize * 2)) && (y > this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize) && (y < this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH)) { //Check if clicked the "up"-button
 				if (this->m_uiDrawingIndex > 0)
 					this->m_uiDrawingIndex--;
-			} else if ((x > this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3) && (x < this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3 + (LISTBOX_NAVIGATOR_WIDTH + this->m_wndInfo.borderSize * 2)) && (y > this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_lsResolution.b - this->m_wndInfo.borderSize - this->m_wndInfo.fontSizeH) && (y < this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_lsResolution.b - this->m_wndInfo.borderSize)) { //Check if clicked the "down"-button
+			} else if ((x > this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3) && (x < this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_lsResolution.a + this->m_wndInfo.borderSize * 3 + (CZYVC_LISTBOX_NAVIGATOR_WIDTH + this->m_wndInfo.borderSize * 2)) && (y > this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_lsResolution.b - this->m_wndInfo.borderSize - this->m_wndInfo.fontSizeH) && (y < this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_lsResolution.b - this->m_wndInfo.borderSize)) { //Check if clicked the "down"-button
 				if (this->m_uiDrawingIndex < this->m_vItems.size() - uiAmountOfItems)
 					this->m_uiDrawingIndex++;
 			}
@@ -815,7 +815,7 @@ namespace CzyVisualComponents {
 
 		if (!bDown) { //Mouse button is released
 			size_t uiItemId = this->FindItemByCoord(this->m_iCurMousePosX, this->m_iCurMousePosY); //Attempt to get item by mouse position
-			if (uiItemId != LISTBOX_INVALID_ITEM_ID) { //If valid then...
+			if (uiItemId != CZYVC_LISTBOX_INVALID_ITEM_ID) { //If valid then...
 				this->m_uiSelectedItem = uiItemId; //...update indicator
 			}
 		}
@@ -832,7 +832,7 @@ namespace CzyVisualComponents {
 	{
 		//Get selected item if any
 
-		if ((this->m_uiSelectedItem == LISTBOX_INVALID_ITEM_ID) || (this->m_uiSelectedItem >= this->m_vItems.size()))
+		if ((this->m_uiSelectedItem == CZYVC_LISTBOX_INVALID_ITEM_ID) || (this->m_uiSelectedItem >= this->m_vItems.size()))
 			return NULL;
 
 		return this->m_vItems[this->m_uiSelectedItem].szExpression.c_str();
@@ -853,7 +853,7 @@ namespace CzyVisualComponents {
 		//Get item id by expression if exists
 
 		if (!szExpression)
-			return LISTBOX_INVALID_ITEM_ID;
+			return CZYVC_LISTBOX_INVALID_ITEM_ID;
 
 		std::string szToStdStr(szExpression);
 
@@ -862,7 +862,7 @@ namespace CzyVisualComponents {
 				return i;
 		}
 
-		return LISTBOX_INVALID_ITEM_ID;
+		return CZYVC_LISTBOX_INVALID_ITEM_ID;
 	}
 
 	bool CListbox::AddItem(const char* szExpression)
@@ -903,7 +903,7 @@ namespace CzyVisualComponents {
 	{
 		//Change item expression
 
-		if ((uiItemId == LISTBOX_INVALID_ITEM_ID) || (uiItemId >= this->m_vItems.size()))
+		if ((uiItemId == CZYVC_LISTBOX_INVALID_ITEM_ID) || (uiItemId >= this->m_vItems.size()))
 			return false;
 
 		this->m_vItems[uiItemId].szExpression = std::string(szNewExpression);
@@ -915,7 +915,7 @@ namespace CzyVisualComponents {
 	{
 		//Change item color
 
-		if ((uiItemId == LISTBOX_INVALID_ITEM_ID) || (uiItemId >= this->m_vItems.size()))
+		if ((uiItemId == CZYVC_LISTBOX_INVALID_ITEM_ID) || (uiItemId >= this->m_vItems.size()))
 			return false;
 
 		this->m_vItems[uiItemId].clOverriddenColor = *pColor;
@@ -945,8 +945,303 @@ namespace CzyVisualComponents {
 
 	void CImagebox::Draw(void)
 	{
-		if (this->m_uiImageId != IMAGEBOX_INVALID_IMAGE_ID) {
+		if (this->m_uiImageId != CZYVC_IMAGEBOX_INVALID_IMAGE_ID) {
 			this->m_diInterface.TpfnDrawImage(this->m_uiImageId, this->m_lsOwnerLocation.a + this->m_lsLocation.a, this->m_lsOwnerLocation.b + this->m_lsLocation.b);
+		}
+	}
+
+	/* Contextmenu methods */
+
+	bool CContextMenu::Initialize(LPCSTR lpszName, CBaseComponent* pAttachToThisComponent, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
+	{
+		//Initialize component
+
+		if (!pAttachToThisComponent)
+			return false;
+
+		this->m_pTargetComponent = pAttachToThisComponent;
+
+		return CBaseComponent::Initialize(CZYVC_CONTEXTMENU_IDENT, lpszName, pWindowInfo, pDrawingInterface);
+	}
+
+	const size_t CContextMenu::GetContextMenuWidth(void)
+	{
+		//Get width of context menu
+
+		size_t uiCurSize = 0;
+
+		for (size_t i = 0; i < this->m_vCtxItems.size(); i++) {
+			size_t uiCurItemSize = strlen(this->m_vCtxItems[i].szText) * (this->m_wndInfo.fontSizeW + this->m_wndInfo.fontCharDist * 2);
+			if (uiCurItemSize > uiCurSize)
+				uiCurSize = uiCurItemSize;
+		}
+
+		return uiCurSize + this->m_wndInfo.borderSize * 2 + CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST * 2;
+	}
+
+	const size_t CContextMenu::GetContextMenuHeight(void)
+	{
+		//Get height of context menu
+
+		return this->m_wndInfo.borderSize * 2 + CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST * 2 + this->m_vCtxItems.size() * this->m_wndInfo.fontSizeH;
+	}
+
+	void CContextMenu::UpdateMenuSize(void)
+	{
+		//Update menu size
+
+		//Update size values
+		this->m_lsResolution.a = this->m_uiCurrentMenuWidth = this->GetContextMenuWidth();
+		this->m_lsResolution.b = this->m_uiCurrentMenuHeight = this->GetContextMenuHeight();
+	}
+
+	size_t CContextMenu::FindItemByCoord(int x, int y)
+	{
+		//Get item id via mouse coordinate
+		
+		//Ceck if is in X range
+		if ((x <= this->m_lsOwnerLocation.a + this->m_lsLocation.a) || (x >= this->m_lsOwnerLocation.a + this->m_lsLocation.a + (int)this->m_uiCurrentMenuWidth))
+			return CZYVC_CONTEXTMENU_INVALID_ITEM_ID;
+
+		//Compare current shown items positions with given coordinates
+		for (size_t i = 0; i < this->m_vCtxItems.size(); i++) {
+			if (((size_t)y >= this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize + CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST + i * this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist) && ((size_t)y <= this->m_lsOwnerLocation.b + this->m_lsLocation.b + CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST + this->m_wndInfo.borderSize + ((i+1) * this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist))) //Compare if y coord is inside the y range of current item
+				return i;
+		}
+
+		return CZYVC_CONTEXTMENU_INVALID_ITEM_ID;
+	}
+
+	size_t CContextMenu::AddItem(const char* pszItemText, const TpfnItemClickEvent pfnItemClickEventFunc)
+	{
+		//Add new contextmenu item
+
+		if (!pszItemText)
+			return CZYVC_CONTEXTMENU_INVALID_ITEM_ID;
+
+		//Setup data
+		ctx_menu_item_s sItem;
+		strcpy_s(sItem.szText, pszItemText);
+		sItem.pfnItemClickEventFunc = pfnItemClickEventFunc;
+		sItem.bIsPlaceHolder = strcmp(pszItemText, "-") == 0;
+
+		//Add to list
+		this->m_vCtxItems.push_back(sItem);
+
+		//Update menu size values
+		this->UpdateMenuSize();
+
+		return this->m_vCtxItems.size() - 1;
+	}
+
+	size_t CContextMenu::InsertItem(const char* pszItemText, const size_t uiAfterThisItem, const TpfnItemClickEvent pfnItemClickEventFunc)
+	{
+		//Insert item into list
+
+		if ((!pszItemText) || (!pfnItemClickEventFunc) || (uiAfterThisItem >= this->m_vCtxItems.size() + 1))
+			return CZYVC_CONTEXTMENU_INVALID_ITEM_ID;
+
+		//Setup data
+		ctx_menu_item_s sItem;
+		strcpy_s(sItem.szText, pszItemText);
+		sItem.pfnItemClickEventFunc = pfnItemClickEventFunc;
+		sItem.bIsPlaceHolder = strcmp(pszItemText, "-") == 0;
+
+		//Add to list
+		this->m_vCtxItems.insert(this->m_vCtxItems.begin() + uiAfterThisItem, sItem);
+
+		//Update menu size values
+		this->UpdateMenuSize();
+
+		return uiAfterThisItem + 1;
+	}
+
+	bool CContextMenu::RemoveItem(const size_t uiItemId)
+	{
+		//Remove item from list
+
+		if (uiItemId >= this->m_vCtxItems.size())
+			return false;
+
+		//Erase from list
+		this->m_vCtxItems.erase(this->m_vCtxItems.begin() + uiItemId);
+
+		//Update menu size values
+		this->UpdateMenuSize();
+
+		return true;
+	}
+
+	void CContextMenu::Raise(const int x, const int y)
+	{
+		//Show context menu at given position (relative)
+
+		//Update relative position
+		
+		this->m_lsLocation.a = x;
+		this->m_lsLocation.b = y;
+
+		//Set visible
+		this->Show();
+
+		//Get focus
+		this->m_bGotFocus = true;
+	}
+
+	void CContextMenu::Draw(void)
+	{
+		//Draw component
+
+		if (!this->m_bShow)
+			return;
+
+		//Draw border
+		this->DrawSalientBorder(this->m_lsOwnerLocation.a + this->m_lsLocation.a, this->m_lsOwnerLocation.b + this->m_lsLocation.b, this->m_uiCurrentMenuWidth, this->m_uiCurrentMenuHeight);
+
+		//Draw form area
+		DRAW_AREA(this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize, this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize, this->m_uiCurrentMenuWidth - this->m_wndInfo.borderSize, this->m_uiCurrentMenuHeight - this->m_wndInfo.borderSize, this->m_wndInfo.colors.bodyfill.r, this->m_wndInfo.colors.bodyfill.g, this->m_wndInfo.colors.bodyfill.b, this->m_wndInfo.colors.bodyfill.a);
+
+		//Get selected item if any
+		const size_t uiCurrentSelectedItem = this->FindItemByCoord(this->m_iCurMousePosX, this->m_iCurMousePosY);
+
+		//Draw items
+		for (size_t i = 0; i < this->m_vCtxItems.size(); i++) {
+			//Draw field around this item if it is selected and not a placeholder
+			if ((i == uiCurrentSelectedItem) && (!this->m_vCtxItems[i].bIsPlaceHolder)) {
+				DRAW_AREA(this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize + CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST, this->m_lsOwnerLocation.b + this->m_lsLocation.b + CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST + (i * this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist), this->m_uiCurrentMenuWidth - CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST - this->m_wndInfo.borderSize, this->m_wndInfo.fontSizeH, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a);
+			}
+			
+			if (this->m_vCtxItems[i].bIsPlaceHolder) {
+				//Draw line
+				DRAW_AREA(this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize + CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST, this->m_lsOwnerLocation.b + this->m_lsLocation.b + CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST + (i * this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist) + (((this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist) / 2) - (this->m_wndInfo.borderSize / 2)), this->m_uiCurrentMenuWidth - this->m_wndInfo.borderSize * 2 - 1, this->m_wndInfo.borderSize / 2, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a);
+			} else {
+				//Draw text
+				DRAW_TEXT(this->m_vCtxItems[i].szText, this->m_wndInfo.szFont, this->m_wndInfo.fontSizeW, this->m_wndInfo.fontSizeH, this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize + CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST, this->m_lsOwnerLocation.b + this->m_lsLocation.b + CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST + (i * this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist), this->m_wndInfo.colors.title.r, this->m_wndInfo.colors.title.g, this->m_wndInfo.colors.title.b, this->m_wndInfo.colors.title.a);
+			}
+		}
+	}
+
+	void CContextMenu::MouseEvent(int x, int y, int iMouseKey, bool bDown)
+	{
+		//Task: Check with target component
+
+		if (!this->m_pTargetComponent)
+			return;
+
+		//if (this->m_pTargetComponent->HasFocus()) { //Check if our target component has currently focus
+			if ((iMouseKey == VK_RBUTTON) && (!bDown)) { //Check for rightclick
+				//Get pointer to location data
+				const component_size_s* pTargetLocation = this->m_pTargetComponent->GetLocation();
+				if ((pTargetLocation)) {
+					//Get pointer to size data
+					const component_size_s* pTargetSize = this->m_pTargetComponent->GetSize();
+					if (pTargetSize) {
+						//Check if mouse position ins in range of the target component
+						if ((x >= this->m_lsOwnerLocation.a + pTargetLocation->a) && (x <= this->m_lsOwnerLocation.a + pTargetLocation->a + pTargetSize->a) && (y >= this->m_lsOwnerLocation.b + pTargetLocation->b) && (y <= this->m_lsOwnerLocation.b + pTargetLocation->b + pTargetSize->b)) {
+							this->Raise(x - this->m_lsOwnerLocation.a, y - this->m_lsOwnerLocation.b); //Raise context menu
+						}
+					}
+				}
+			}
+		//}
+	}
+
+	void CContextMenu::OnMouseMove(int x, int y)
+	{
+		//Handle mouse move event
+
+		this->m_iCurMousePosX = x;
+		this->m_iCurMousePosY = y;
+	}
+
+	void CContextMenu::OnMouseButton(int iMouseKey, bool bDown)
+	{
+		//Handle mouse button clicks
+
+		if (!this->m_bShow)
+			return;
+
+		if ((iMouseKey == VK_LBUTTON) && (!bDown)) { //Left mouse  button released
+			const size_t uiItemId = this->FindItemByCoord(this->m_iCurMousePosX, this->m_iCurMousePosY); //Find item by coord
+			if ((uiItemId != CZYVC_CONTEXTMENU_INVALID_ITEM_ID) && (uiItemId < this->m_vCtxItems.size())) { //Verify ID
+				if ((!this->m_vCtxItems[uiItemId].bIsPlaceHolder) && (this->m_vCtxItems[uiItemId].pfnItemClickEventFunc)) { //Verifiy flag and function pointer value
+					this->m_vCtxItems[uiItemId].pfnItemClickEventFunc(this, uiItemId); //Call event function
+					this->m_bGotFocus = false; //Release focus
+					this->Hide(); //Hide menu
+				}
+			}
+		}
+	}
+
+	void CContextMenu::OnFocus(bool bStatus)
+	{
+		//Signaled for focus events
+
+		CBaseComponent::OnFocus(bStatus);
+
+		if (!bStatus)
+			this->Hide();
+	}
+
+	/* ProgressBar methods */
+
+	bool CProgressBar::Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
+	{
+		//Initialize componen
+
+		return CBaseComponent::Initialize(CZYVC_PROGRESSBAR_IDENT, lpszName, pWindowInfo, pDrawingInterface);
+	}
+
+	int CProgressBar::GetAmountOfBlocks(void)
+	{
+		//Get amount of blocks that suit into entire component width area
+
+		return (this->m_lsResolution.a - this->m_wndInfo.borderSize * 2) / (this->m_iBlockWidth + this->m_iBlockDist) + 1;
+	}
+
+	int CProgressBar::GetBlockNum(int iValue)
+	{
+		//Calculate the number of a block by value (range: 0 - amount of blocks, iValue must be between this range)
+
+		return (int)((float)this->GetAmountOfBlocks() / (float)this->m_iMax * (float)iValue);
+	}
+
+	void CProgressBar::SetRange(int iMin, int iMax)
+	{
+		//Set range
+
+		this->m_iMin = iMin;
+		this->m_iMax = iMax;
+	}
+	
+	void CProgressBar::SetValue(int iValue)
+	{
+		//Set value
+
+		//Correct if needed
+		
+		if (iValue < this->m_iMin)
+			iValue = this->m_iMin;
+
+		if (iValue > this->m_iMax)
+			iValue = this->m_iMax;
+
+		//Save value
+		this->m_iValue = iValue;
+	}
+	
+	void CProgressBar::Draw(void)
+	{
+		//Draw window
+
+		//Draw box
+		this->DrawDeepBorder(this->m_lsOwnerLocation.a + this->m_lsLocation.a, this->m_lsOwnerLocation.b + this->m_lsLocation.b, this->m_lsResolution.a, this->m_lsResolution.b);
+		DRAW_AREA(this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize, this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize, this->m_lsResolution.a - this->m_wndInfo.borderSize, this->m_lsResolution.b - this->m_wndInfo.borderSize, this->m_wndInfo.colors.bodyfill.r, this->m_wndInfo.colors.bodyfill.g, this->m_wndInfo.colors.bodyfill.b, this->m_wndInfo.colors.bodyfill.a);
+	
+		//Draw blocks according to value
+		const int iBlocksToHandle = this->GetBlockNum(this->m_iValue);
+		for (int i = 0; i < iBlocksToHandle; i++) {
+			DRAW_AREA(this->m_lsOwnerLocation.a + this->m_lsLocation.a + this->m_wndInfo.borderSize + i * (this->m_iBlockWidth + this->m_iBlockDist), this->m_lsOwnerLocation.b + this->m_lsLocation.b + this->m_wndInfo.borderSize, this->m_iBlockWidth, this->m_lsResolution.b - this->m_wndInfo.borderSize, this->m_wndInfo.colors.headfill.r, this->m_wndInfo.colors.headfill.g, this->m_wndInfo.colors.headfill.b, this->m_wndInfo.colors.headfill.a);
 		}
 	}
 
@@ -977,7 +1272,7 @@ namespace CzyVisualComponents {
 			return NULL;
 
 		//Initialize component
-		if (!pForm->Initialize(FORM_IDENT, lpszName, pWindowInfo, pDrawingInterface)) {
+		if (!pForm->Initialize(lpszName, pWindowInfo, pDrawingInterface)) {
 			delete pForm;
 			return NULL;
 		}
@@ -985,7 +1280,7 @@ namespace CzyVisualComponents {
 		return pForm;
 	}
 	
-	bool AttachLabel(CForm* pForm, LPCSTR lpszName, int x, int y, unsigned char r, unsigned char g, unsigned char b, unsigned char a, const char* lpszText)
+	CLabel* AttachLabel(CForm* pForm, LPCSTR lpszName, int x, int y, unsigned char r, unsigned char g, unsigned char b, unsigned char a, const char* lpszText)
 	{
 		//Create new label and add to form component
 
@@ -995,13 +1290,13 @@ namespace CzyVisualComponents {
 		//Allocate memory for component instance
 		CLabel* pLabel = new CLabel;
 		if (!pLabel)
-			return false;
+			return NULL;
 
 		//Get window info
 		windowinfo_s* pWindowInfo = pForm->GetWindowInfo();
 		if (!pWindowInfo) {
 			delete pLabel;
-			return false;
+			return NULL;
 		}
 		
 		//Set colors
@@ -1013,16 +1308,16 @@ namespace CzyVisualComponents {
 		pLabel->SetColors(&mcColors);
 
 		//Initialize component
-		if (!pLabel->Initialize(LABEL_IDENT, lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
+		if (!pLabel->Initialize(lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
 			delete pLabel;
-			return false;
+			return NULL;
 		}
 		
 		//Get owner location
 		const component_size_s* pLocation = pForm->GetLocation();
 		if (!pLocation) {
 			delete pLabel;
-			return false;
+			return NULL;
 		}
 		
 		//Call OnMove() event method initially
@@ -1031,13 +1326,13 @@ namespace CzyVisualComponents {
 		//Set label location (relative)
 		if (!pLabel->SetLocation(x, y)) {
 			delete pLabel;
-			return false;
+			return NULL;
 		}
 		
 		//Add to form
 		if (!pForm->AddVisualComponent(pLabel, NULL, NULL)) {
 			delete pLabel;
-			return false;
+			return NULL;
 		}
 		
 		//Set text if desired
@@ -1045,32 +1340,32 @@ namespace CzyVisualComponents {
 			pLabel->SetText(lpszText);
 		}
 
-		return true;
+		return pLabel;
 	}
 
-	bool AttachButton(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const TpfnEventFunc pfnEventFunc)
+	CButton* AttachButton(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const TpfnEventFunc pfnEventFunc)
 	{
 		//Create new button and add to form component
 
 		if ((!pForm) || (!pTextColor) || (!pBoxColor) || (!pHoverColor) || (!lpszText) || (!pfnEventFunc))
-			return false;
+			return NULL;
 
 		//Allocate memory for component instance
 		CButton* pButton = new CButton;
 		if (!pButton)
-			return false;
+			return NULL;
 
 		//Get window info
 		windowinfo_s* pWindowInfo = pForm->GetWindowInfo();
 		if (!pWindowInfo) {
 			delete pButton;
-			return false;
+			return NULL;
 		}
 		
 		//Initialize component
-		if (!pButton->Initialize(BUTTON_IDENT, lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
+		if (!pButton->Initialize(lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
 			delete pButton;
-			return false;
+			return NULL;
 		}
 		
 		//Set colors
@@ -1093,7 +1388,7 @@ namespace CzyVisualComponents {
 		const component_size_s* pLocation = pForm->GetLocation();
 		if (!pLocation) {
 			delete pButton;
-			return false;
+			return NULL;
 		}
 		
 		//Call OnMove() event method initially
@@ -1102,53 +1397,53 @@ namespace CzyVisualComponents {
 		//Set location (relative)
 		if (!pButton->SetLocation(x, y)) {
 			delete pButton;
-			return false;
+			return NULL;
 		}
 		
 		//Set size
 		if (!pButton->SetSize(w, h)) {
 			delete pButton;
-			return false;
+			return NULL;
 		}
 		
 		//Set text
 		if (!pButton->SetText(lpszText)) {
 			delete pButton;
-			return false;
+			return NULL;
 		}
 		
 		//Add to form
 		if (!pForm->AddVisualComponent(pButton, NULL, pfnEventFunc)) {
 			delete pButton;
-			return false;
+			return NULL;
 		}
 		
-		return true;
+		return pButton;
 	}
 
-	bool AttachCheckbox(CForm* pForm, LPCSTR lpszName, int x, int y, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const char* lpszAffectedVar, bool bInitialValue)
+	CCheckbox* AttachCheckbox(CForm* pForm, LPCSTR lpszName, int x, int y, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const char* lpszAffectedVar, bool bInitialValue)
 	{
 		//Create new checkbox and add to form component
 
 		if ((!pForm) || (!pTextColor) || (!pBoxColor) || (!pHoverColor) || (!lpszText) || (!lpszAffectedVar))
-			return false;
+			return NULL;
 
 		//Allocate memory for component instance
 		CCheckbox* pCheckbox = new CCheckbox;
 		if (!pCheckbox)
-			return false;
+			return NULL;
 		
 		//Get window info
 		windowinfo_s* pWindowInfo = pForm->GetWindowInfo();
 		if (!pWindowInfo) {
 			delete pCheckbox;
-			return false;
+			return NULL;
 		}
 		
 		//Initialize component
-		if (!pCheckbox->Initialize(CHECKBOX_IDENT, lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
+		if (!pCheckbox->Initialize(lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
 			delete pCheckbox;
-			return false;
+			return NULL;
 		}
 		
 		//Set colors
@@ -1171,7 +1466,7 @@ namespace CzyVisualComponents {
 		const component_size_s* pLocation = pForm->GetLocation();
 		if (!pLocation) {
 			delete pCheckbox;
-			return false;
+			return NULL;
 		}
 		
 		//Call OnMove() event method initially
@@ -1180,56 +1475,56 @@ namespace CzyVisualComponents {
 		//Set location (relative)
 		if (!pCheckbox->SetLocation(x, y)) {
 			delete pCheckbox;
-			return false;
+			return NULL;
 		}
 		
 		//Set text
 		if (!pCheckbox->SetText(lpszText)) {
 			delete pCheckbox;
-			return false;
+			return NULL;
 		}
 
 		//Set size
 		if (!pCheckbox->SetSize(pWindowInfo->fontSizeH + pWindowInfo->fontLineDist + (int)strlen(lpszText) * pWindowInfo->fontSizeW, pWindowInfo->fontSizeH)) {
 			delete pCheckbox;
-			return false;
+			return NULL;
 		}
 		
 		//Add to form
 		if (!pForm->AddVisualComponent(pCheckbox, lpszAffectedVar, NULL)) {
 			delete pCheckbox;
-			return false;
+			return NULL;
 		}
 
 		//Set initial value
 		pCheckbox->SetValue(&bInitialValue);
 		
-		return true;
+		return pCheckbox;
 	}
 
-	bool AttachTextBox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const char* lpszAffectedVar, unsigned int uiTextLen)
+	CTextbox* AttachTextBox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const char* lpszAffectedVar, unsigned int uiTextLen)
 	{
 		//Create new textbox and add to form component
 
 		if ((!pForm) || (!pTextColor) || (!pBoxColor) || (!pHoverColor) || (!lpszText) || (!lpszAffectedVar))
-			return false;
+			return NULL;
 
 		//Allocate memory for component instance
 		CTextbox* pTextbox = new CTextbox;
 		if (!pTextbox)
-			return false;
+			return NULL;
 
 		//Get window info
 		windowinfo_s* pWindowInfo = pForm->GetWindowInfo();
 		if (!pWindowInfo) {
 			delete pTextbox;
-			return false;
+			return NULL;
 		}
 		
 		//Initialize component
-		if (!pTextbox->Initialize(TEXTBOX_IDENT, lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
+		if (!pTextbox->Initialize(lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
 			delete pTextbox;
-			return false;
+			return NULL;
 		}
 		
 		//Set colors
@@ -1252,7 +1547,7 @@ namespace CzyVisualComponents {
 		const component_size_s* pLocation = pForm->GetLocation();
 		if (!pLocation) {
 			delete pTextbox;
-			return false;
+			return NULL;
 		}
 		
 		//Call OnMove() event method initially
@@ -1261,50 +1556,50 @@ namespace CzyVisualComponents {
 		//Set location (relative)
 		if (!pTextbox->SetLocation(x, y)) {
 			delete pTextbox;
-			return false;
+			return NULL;
 		}
 		
 		//Set text length
-		pTextbox->SetTextLen((uiTextLen > 0) ? uiTextLen : TEXTBOX_DEFAULT_LENGTH);
+		pTextbox->SetTextLen((uiTextLen > 0) ? uiTextLen : CZYVC_TEXTBOX_DEFAULT_LENGTH);
 
 		//Set text
 		if (!pTextbox->SetText(lpszText)) {
 			delete pTextbox;
-			return false;
+			return NULL;
 		}
 		
 		//Add to form
 		if (!pForm->AddVisualComponent(pTextbox, lpszAffectedVar, NULL)) {
 			delete pTextbox;
-			return false;
+			return NULL;
 		}
 
-		return true;
+		return pTextbox;
 	}
 
-	bool AttachGroupbox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pFrameColor, const char* lpszText)
+	CGroupbox* AttachGroupbox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pFrameColor, const char* lpszText)
 	{
 		//Create new groupbox and add to form component
 
 		if ((!pForm) || (!pTextColor) || (!pFrameColor) || (!lpszText))
-			return false;
+			return NULL;
 
 		//Allocate memory for component instance
 		CGroupbox* pGroupbox = new CGroupbox;
 		if (!pGroupbox)
-			return false;
+			return NULL;
 
 		//Get window info
 		windowinfo_s* pWindowInfo = pForm->GetWindowInfo();
 		if (!pWindowInfo) {
 			delete pGroupbox;
-			return false;
+			return NULL;
 		}
 		
 		//Initialize component
-		if (!pGroupbox->Initialize(GROUPBOX_IDENT, lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
+		if (!pGroupbox->Initialize(lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
 			delete pGroupbox;
-			return false;
+			return NULL;
 		}
 		
 		//Set colors
@@ -1323,7 +1618,7 @@ namespace CzyVisualComponents {
 		const component_size_s* pLocation = pForm->GetLocation();
 		if (!pLocation) {
 			delete pGroupbox;
-			return false;
+			return NULL;
 		}
 		
 		//Call OnMove() event method initially
@@ -1332,53 +1627,53 @@ namespace CzyVisualComponents {
 		//Set location (relative)
 		if (!pGroupbox->SetLocation(x, y)) {
 			delete pGroupbox;
-			return false;
+			return NULL;
 		}
 
 		//Set size
 		if (!pGroupbox->SetSize(w, h)) {
 			delete pGroupbox;
-			return false;
+			return NULL;
 		}
 
 		//Set text
 		if (!pGroupbox->SetText(lpszText)) {
 			delete pGroupbox;
-			return false;
+			return NULL;
 		}
 		
 		//Add to form
 		if (!pForm->AddVisualComponent(pGroupbox, NULL, NULL)) {
 			delete pGroupbox;
-			return false;
+			return NULL;
 		}
 
-		return true;
+		return pGroupbox;
 	}
 
-	bool AttachListbox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pItemColor, color32_s* pBackgroundColor, color32_s* pSelectedItemColor)
+	CListbox* AttachListbox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pItemColor, color32_s* pBackgroundColor, color32_s* pSelectedItemColor)
 	{
 		//Create new listbox and add to form component
 
 		if ((!pForm) || (!pItemColor) || (!pBackgroundColor) || (!pSelectedItemColor))
-			return false;
+			return NULL;
 
 		//Allocate memory for component instance
 		CListbox* pListbox = new CListbox;
 		if (!pListbox)
-			return false;
+			return NULL;
 
 		//Get window info
 		windowinfo_s* pWindowInfo = pForm->GetWindowInfo();
 		if (!pWindowInfo) {
 			delete pListbox;
-			return false;
+			return NULL;
 		}
 		
 		//Initialize component
-		if (!pListbox->Initialize(LISTBOX_IDENT, lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
+		if (!pListbox->Initialize(lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
 			delete pListbox;
-			return false;
+			return NULL;
 		}
 		
 		//Set colors
@@ -1401,7 +1696,7 @@ namespace CzyVisualComponents {
 		const component_size_s* pLocation = pForm->GetLocation();
 		if (!pLocation) {
 			delete pListbox;
-			return false;
+			return NULL;
 		}
 		
 		//Call OnMove() event method initially
@@ -1410,47 +1705,47 @@ namespace CzyVisualComponents {
 		//Set location (relative)
 		if (!pListbox->SetLocation(x, y)) {
 			delete pListbox;
-			return false;
+			return NULL;
 		}
 
 		//Set size
 		if (!pListbox->SetSize(w, h)) {
 			delete pListbox;
-			return false;
+			return NULL;
 		}
 		
 		//Add to form
 		if (!pForm->AddVisualComponent(pListbox, NULL, NULL)) {
 			delete pListbox;
-			return false;
+			return NULL;
 		}
 
-		return true;
+		return pListbox;
 	}
 
-	bool AttachImagebox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, const size_t uiImageId)
+	CImagebox* AttachImagebox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, const size_t uiImageId)
 	{
 		//Create new imagebox and add to form component
 
 		if ((!pForm) || (!lpszName))
-			return false;
+			return NULL;
 
 		//Allocate memory for component instance
 		CImagebox* pImagebox = new CImagebox;
 		if (!pImagebox)
-			return false;
+			return NULL;
 
 		//Get window info
 		windowinfo_s* pWindowInfo = pForm->GetWindowInfo();
 		if (!pWindowInfo) {
 			delete pImagebox;
-			return false;
+			return NULL;
 		}
 		
 		//Initialize component
-		if (!pImagebox->Initialize(IMAGEBOX_IDENT, lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
+		if (!pImagebox->Initialize(lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
 			delete pImagebox;
-			return false;
+			return NULL;
 		}
 		
 		//Set colors
@@ -1461,7 +1756,7 @@ namespace CzyVisualComponents {
 		const component_size_s* pLocation = pForm->GetLocation();
 		if (!pLocation) {
 			delete pImagebox;
-			return false;
+			return NULL;
 		}
 		
 		//Call OnMove() event method initially
@@ -1470,22 +1765,165 @@ namespace CzyVisualComponents {
 		//Set location (relative)
 		if (!pImagebox->SetLocation(x, y)) {
 			delete pImagebox;
-			return false;
+			return NULL;
 		}
 
 		//Set size
 		if (!pImagebox->SetSize(w, h)) {
 			delete pImagebox;
-			return false;
+			return NULL;
 		}
 		
 		//Add to form
 		if (!pForm->AddVisualComponent(pImagebox, NULL, NULL)) {
 			delete pImagebox;
-			return false;
+			return NULL;
 		}
 
-		return true;
+		return pImagebox;
+	}
+
+	CContextMenu* CreateContextMenu(CForm* pForm, LPCSTR lpszName, LPCSTR lpszTargetCompName, color32_s* pBackgroundColor, color32_s* pSelColor, color32_s* pTextColor)
+	{
+		//Create new contextmenu and add component to form
+
+		if ((!pForm) || (!lpszName) || (!pBackgroundColor) || (!pSelColor) || (!pTextColor))
+			return NULL;
+
+		//Find target component
+		CBaseComponent* pTargetComponent = pForm->GetComponent(lpszTargetCompName);
+		if (!pTargetComponent)
+			return NULL;
+
+		//Allocate new component instance
+		CContextMenu* pContextMenu = new CContextMenu;
+		if (!pContextMenu)
+			return NULL;
+
+		//Get window info
+		windowinfo_s* pWindowInfo = pForm->GetWindowInfo();
+		if (!pWindowInfo) {
+			delete pContextMenu;
+			return NULL;
+		}
+
+		//Initialize component
+		if (!pContextMenu->Initialize(lpszName, pTargetComponent, pWindowInfo, pForm->GetDrawingInterface())) {
+			delete pContextMenu;
+			return NULL;
+		}
+
+		//Set colors
+		menu_color_s mcColors = pWindowInfo->colors;
+		mcColors.bodyfill.r = pBackgroundColor->r;
+		mcColors.bodyfill.g = pBackgroundColor->g;
+		mcColors.bodyfill.b = pBackgroundColor->b;
+		mcColors.bodyfill.a = pBackgroundColor->a;
+		mcColors.title.r = pTextColor->r;
+		mcColors.title.g = pTextColor->g;
+		mcColors.title.b = pTextColor->b;
+		mcColors.title.a = pTextColor->a;
+		mcColors.headfill.r = pSelColor->r;
+		mcColors.headfill.g = pSelColor->g;
+		mcColors.headfill.b = pSelColor->b;
+		mcColors.headfill.a = pSelColor->a;
+		pContextMenu->SetColors(&mcColors);
+
+		//Get owner location
+		const component_size_s* pLocation = pForm->GetLocation();
+		if (!pLocation) {
+			delete pContextMenu;
+			return NULL;
+		}
+		
+		//Call OnMove() event method initially
+		pContextMenu->OnMove(pLocation->a, pLocation->b);
+
+		//Set location (relative)
+		if (!pContextMenu->SetLocation(1, 1)) {
+			delete pContextMenu;
+			return NULL;
+		}
+		
+		//Add to form
+		if (!pForm->AddVisualComponent(pContextMenu, NULL, NULL)) {
+			delete pContextMenu;
+			return NULL;
+		}
+
+		return pContextMenu;
+	}
+
+	CProgressBar* AttachProgressBar(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pBoxColor, color32_s* pBlockColor, int iMin, int iMax, int iStartValue)
+	{
+		//Create new progressbar and add to form component
+
+		if ((!pForm) || (!lpszName) || (!pBoxColor) || (!pBlockColor))
+			return NULL;
+
+		//Allocate memory for component instance
+		CProgressBar* pProgressBar = new CProgressBar;
+		if (!pProgressBar)
+			return NULL;
+
+		//Get window info
+		windowinfo_s* pWindowInfo = pForm->GetWindowInfo();
+		if (!pWindowInfo) {
+			delete pProgressBar;
+			return NULL;
+		}
+		
+		//Initialize component
+		if (!pProgressBar->Initialize(lpszName, pWindowInfo, pForm->GetDrawingInterface())) {
+			delete pProgressBar;
+			return NULL;
+		}
+		
+		//Set colors
+		menu_color_s mcColors = pWindowInfo->colors;
+		mcColors.headfill.r = pBlockColor->r;
+		mcColors.headfill.g = pBlockColor->g;
+		mcColors.headfill.b = pBlockColor->b;
+		mcColors.headfill.a = pBlockColor->a;
+		mcColors.bodyfill.r = pBoxColor->r;
+		mcColors.bodyfill.g = pBoxColor->g;
+		mcColors.bodyfill.b = pBoxColor->b;
+		mcColors.bodyfill.a = pBoxColor->a;
+		pProgressBar->SetColors(&mcColors);
+
+		//Get owner location
+		const component_size_s* pLocation = pForm->GetLocation();
+		if (!pLocation) {
+			delete pProgressBar;
+			return NULL;
+		}
+		
+		//Call OnMove() event method initially
+		pProgressBar->OnMove(pLocation->a, pLocation->b);
+
+		//Set location (relative)
+		if (!pProgressBar->SetLocation(x, y)) {
+			delete pProgressBar;
+			return NULL;
+		}
+
+		//Set size
+		if (!pProgressBar->SetSize(w, h)) {
+			delete pProgressBar;
+			return NULL;
+		}
+		
+		//Add to form
+		if (!pForm->AddVisualComponent(pProgressBar, NULL, NULL)) {
+			delete pProgressBar;
+			return NULL;
+		}
+
+		//Set range and start value
+		pProgressBar->SetRange(iMin, iMax);
+		pProgressBar->SetValue(iStartValue);
+
+		return pProgressBar;
 	}
 
 	void FreeForm(CForm* pForm)
