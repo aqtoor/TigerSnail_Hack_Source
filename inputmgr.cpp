@@ -9,7 +9,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -184,6 +184,24 @@ LRESULT CALLBACK IPMGR_WindowProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM l
 				g_pMainForm->MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_LBUTTON, false);
 			else if (g_bSnakeToggle)
 				g_oSnake.MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_LBUTTON, false);
+
+			//Prevent original window procedure from handling the event
+			return 1L;
+		} else if (nCode == WM_RBUTTONDOWN) { //Right mouse button event shall also get blocked if they occur
+			//Inform form about event
+			if (g_bMenuToggle)
+				g_pMainForm->MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_RBUTTON, true);
+			else if (g_bSnakeToggle)
+				g_oSnake.MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_RBUTTON, true);
+
+			//Prevent original window procedure from handling the event
+			return 1L;
+		} else if (nCode == WM_RBUTTONUP) { //Right mouse button event shall also get blocked if they occur
+			//Inform form about event
+			if (g_bMenuToggle)
+				g_pMainForm->MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_RBUTTON, false);
+			else if (g_bSnakeToggle)
+				g_oSnake.MouseEvent(g_InputMgr.m_ptCurrentMousePos.x, g_InputMgr.m_ptCurrentMousePos.y, VK_RBUTTON, false);
 
 			//Prevent original window procedure from handling the event
 			return 1L;
