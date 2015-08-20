@@ -3,7 +3,7 @@ TigerSnail Hack: Source
 
 Developed by sk0r / Czybik
 
-Version: 0.4
+Version: 0.5
 Contact: Czybik_Stylez<0x40>gmx<0x2E>de
 
 Description:
@@ -25,6 +25,9 @@ Features:
 		- IGameEventManager2
 		- IGameEventListener2
 		- IGameEvent
+		- IInputSystem
+		- IInput
+		- IEngineTrace
 	+ Access to:
 		- appSystemFactory function
 		- Client exports
@@ -38,11 +41,14 @@ Features:
 		- ICVar instance
 		- IGameEventManager2 instance
 		- Games' IDirect3DDevice9 context
+		- Clients' IInput class instance
+		- IEngineTrace instance
 	+ Hooks:
 		- CHLClient method(s)
 		- IPanel method(s)
 		- IStudioRender method(s)
 		- IVEngineClient method(s)
+		- IInput method(s)
 		- IDirect3DDevice9::EndScene
 	+ CzyConfigMgr v0.3
 	+ Window menu system
@@ -55,6 +61,8 @@ Features:
 		- Groupbox
 		- Listbox
 		- Imagebox
+		- Contextmenu
+		- ProgressBar
 	+ Input manager
 	+ VFT hook manager
 	+ D3D renderer
@@ -72,6 +80,7 @@ Features:
 		- Health ESP
 		- Decoy ESP
 		- Bomb ESP
+		- Playermodel color
 	+ Infobox
 	+ Snake game
 
@@ -101,6 +110,20 @@ Changelog:
 		- Added bomb ESP
 		- Added health ESP
 		- Changed ESP color handling
-
+	# Version 0.5
+		- Added Contextmenu GUI component
+		- Added ProgressBar GUI component
+		- Improved GUI component implementations
+		- Added IInputSystem class definition
+		- Added playermodel color enhancement
+		- Added IInput class definition
+		- Added explained IInput::FindKey() disassembly
+		- Added access to client IInput instance
+		- Added CHLClient::IN_IsKeyDown() hook
+		- Added CHLClient::CreateMove() hook
+		- Added explained CInput::CreateMove() disassembly
+		- Added access to IEngineTrace instance
+		- Added IEngineTrace class definition
+		
 Credits:
 	sk0r / Czybik, OllyDbg, Source SDK
