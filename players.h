@@ -10,7 +10,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -70,6 +70,7 @@ class CPlayerMgr {
 private:
 	player_data_s m_sPlayerData[MAX_CLIENTS];
 	color24 m_sTeamColors[3];
+	color24 m_sTeamPlayerModelColors[3];
 	color32_s m_sNoColorOverwrite;
 	color32_s m_sGreyColor;
 
@@ -81,6 +82,7 @@ public:
 	~CPlayerMgr() {}
 
 	void SetTeamColor(const byte ucSlot, const color24& sColor) { if (ucSlot >= 3) return; this->m_sTeamColors[ucSlot] = sColor; }
+	void SetTeamPlayerModelColor(const byte ucSlot, const color24& sColor) { if (ucSlot >= 3) return; this->m_sTeamPlayerModelColors[ucSlot] = sColor; }
 
 	void Reset(void);
 
@@ -106,9 +108,11 @@ public:
 	bool DrawSteamID(const MPLAYERID uiEntIndex, const byte ucLineId/*, const bool bCentered*/);
 	bool DrawHealth(const MPLAYERID uiEntIndex, const byte ucLineId/*, const bool bCentered*/);
 
+	bool SetPlayerModelColor(const MPLAYERID uiEntIndex, const bool bEnable = true);
+
 	int GetLocalPlayerTeam(void) { player_data_s* pLocalPlayerData = this->Local(); if (pLocalPlayerData) return pLocalPlayerData->iTeam; return -1; }
 
-	color24 MakeColor24(int r, int g, int b)
+	inline color24 MakeColor24(int r, int g, int b)
 	{ 
 		color24 sColor;
 		
