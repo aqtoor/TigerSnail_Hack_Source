@@ -8,7 +8,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -454,5 +454,41 @@ bool CPlayerMgr::DrawHealth(const MPLAYERID uiEntIndex, const byte ucLineId/*, c
 
 	//Draw health
 	return this->DrawInfo(uiEntIndex, szHealthText, ucLineId, (ucLineId > 0) ? sHealthColor : COLOR_OVERWRITE_NO/*, bCentered*/);
+}
+//======================================================================
+
+//======================================================================
+bool CPlayerMgr::SetPlayerModelColor(const MPLAYERID uiEntIndex, const bool bEnable)
+{
+	//Set color mode of the players playermodel
+
+	//Validate index and entity
+
+	if (!VALID_MID(uiEntIndex))
+		return false;
+
+	if (!this->IsPlaying(uiEntIndex))
+		return false;
+
+	if (bEnable) { //Check if color mode shall be enabled
+		if (!(this->m_sPlayerData[uiEntIndex].pEntity->m_nRenderFX & kRenderFxGlowShell)) { //Check if not already set
+			this->m_sPlayerData[uiEntIndex].pEntity->m_nRenderFX |= kRenderFxGlowShell; //Set glowshell bitflag
+
+			//Get color according to team
+			color24 sDrawingColor = this->m_sTeamPlayerModelColors[this->m_sPlayerData[uiEntIndex].pEntity->m_iTeamNum - 1];
+
+			//Set color data
+			this->m_sPlayerData[uiEntIndex].pEntity->m_clrRender.r = sDrawingColor.r;
+			this->m_sPlayerData[uiEntIndex].pEntity->m_clrRender.g = sDrawingColor.g;
+			this->m_sPlayerData[uiEntIndex].pEntity->m_clrRender.b = sDrawingColor.b;
+			this->m_sPlayerData[uiEntIndex].pEntity->m_clrRender.a = 255;
+		}
+	} else {
+		if (this->m_sPlayerData[uiEntIndex].pEntity->m_nRenderFX & kRenderFxGlowShell) { //Check if already set
+			this->m_sPlayerData[uiEntIndex].pEntity->m_nRenderFX &= ~kRenderFxGlowShell; //Remove glowshell bitflag
+		}
+	}
+
+	return true;
 }
 //======================================================================
