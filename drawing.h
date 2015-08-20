@@ -10,7 +10,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
