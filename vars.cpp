@@ -6,9 +6,9 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
-	Mail Czybik_Stylez<0x40>gmx<0x2E>de
+	Mail Czybik_Stylez@gmx.de
 
 	File: vars.cpp: Data objects 
 */
@@ -17,6 +17,7 @@
 std::string g_szModuleDir(""); //Path to module file
 std::string g_szLogFile(""); //Full file name of log output file
 
+HMODULE g_hClientDll = NULL; //Handle to client.dll
 HANDLE g_hSearchThread; //Handle to the search thread
 
 CreateInterfaceFn g_appSystemFactory; //Pointer to appSystemFactory function from engine.dll
@@ -26,7 +27,9 @@ client_import_s g_ClientImports[IMPORT_IFACE_AMOUNT] = { //List of some importab
 	{"VStudioRender026", NULL},
 	{"VDebugOverlay004", NULL},
 	{"VGUI_Surface031", NULL},
-	{"GAMEEVENTSMANAGER002", NULL}
+	{"GAMEEVENTSMANAGER002", NULL},
+	{"InputSystemVersion001", NULL},
+	{"EngineTraceClient004", NULL}
 	//Add more here
 };
 
@@ -37,6 +40,9 @@ _IVEngineClient* g_pEngineClient = NULL; //Pointer to an instance of IVEngineCli
 _CClientEntityList* g_pClientEntityList = NULL; //Pointer to an instance of CClientEntityList
 _IVDebugOverlay* g_pDebugOverlay = NULL; //Pointer to an instance of IVDebugOverlay
 _IGameEventManager2* g_pGameEventManager = NULL; //Pointer to an instance of IGameEventManager2
+_IInputSystem* g_pInputSystem = NULL; //Pointer to an instance of IInputSystem
+_IInput* g_pInput = NULL; //Pointer to an instance of IInput
+_IEngineTrace* g_pEngineTrace = NULL; //Pointer to an instance of IEngineClient
 
 HWND g_hGameWindow = NULL; //Handle to game window
 screensize_s g_ScreenSize; //Screen resolution
@@ -47,6 +53,7 @@ bool g_bMenuToggle = false; //Menu toggle indicator
 bool g_bSnakeToggle = false; //Snake toggle indicator
 bool g_bInfoboxToggle = false; //Infobox toggle indicator
 bool g_bIsInGame = false; //Whether in-game context is given or not
+bool g_bInAttack = false; //Whether local player is attacking
 
 CLog* g_pLog = NULL; //Log manager instance
 CVFTHookMgr g_oHookMgr; //Hook manager instance
@@ -62,6 +69,7 @@ CzyConfigMgr::CCVar::cvar_s* g_pcvDecoyESP = NULL; //CVar for decoy esp
 CzyConfigMgr::CCVar::cvar_s* g_pcvBombESP = NULL; //CVar for bomb esp
 CzyConfigMgr::CCVar::cvar_s* g_pcvIgnoreTeammatesESP = NULL; //CVar to indicate whether ignore teammates for esp or not
 CzyConfigMgr::CCVar::cvar_s* g_pcvColorModeESP = NULL; //CVar to indicate whether use team related or player context team related colors
+CzyConfigMgr::CCVar::cvar_s* g_pcvPlayerModelColor = NULL; //CVar for playermodel color
 CzyConfigMgr::CCVar::cvar_s* g_pcvMenuKey = NULL; //CVar for menu key
 CzyConfigMgr::CCVar::cvar_s* g_pcvSnakeKey = NULL; //CVar for snake key
 CzyConfigMgr::CCVar::cvar_s* g_pcvInfoboxKey = NULL; //CVar for infobox key
