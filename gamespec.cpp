@@ -1,4 +1,5 @@
 #include "gamespec.h"
+#include "vars.h"
 
 /*
 	TigerSnail Hack: Source
@@ -6,7 +7,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -103,7 +104,7 @@ CreateInterfaceFn FindAppSystemFactory(header_info_s* pEngineDllHeader)
 //======================================================================
 
 //======================================================================
-ICvar* FindICvarClass(header_info_s* pClientDllHeader)
+ICvar* FindICvarClassInstance(header_info_s* pClientDllHeader)
 {
 	//Find pointer to the ICvar interface via the client.dll CHLClient Init function
 
@@ -125,5 +126,16 @@ ICvar* FindICvarClass(header_info_s* pClientDllHeader)
 		return NULL;
 
 	return *(ICvar**)(*(DWORD*)(dwPushOp - 0x04)); //Return pointer to class object
+}
+//======================================================================
+
+//======================================================================
+class IInput* FindIInputClassInstance(header_info_s* pClientDllHeader)
+{
+	//Get absolute address if client.dll's IInput instance
+
+	#define OFS_IINPUT_INSTANCE 0x249957
+
+	return *(IInput**)((DWORD)pClientDllHeader->dwModuleBase + OFS_IINPUT_INSTANCE);
 }
 //======================================================================
