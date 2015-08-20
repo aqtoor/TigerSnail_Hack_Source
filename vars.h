@@ -18,7 +18,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -28,13 +28,13 @@
 //======================================================================
 #define PROGRAM_NAME "TigerSnail Hack: Source"
 #define PROGRAM_SHORTCUT "TSHS"
-#define PROGRAM_VERSION "0.4"
+#define PROGRAM_VERSION "0.5"
 #define PROGRAM_AUTHOR "sk0r / Czybik"
 #define PROGRAM_CONTACT "Czybik_Stylez<0x40>gmx<0x2E>de"
 
 #define MAX_CHAR 250
 
-#define IMPORT_IFACE_AMOUNT 5
+#define IMPORT_IFACE_AMOUNT 7
 
 #define GAME_TARGET_WINDOW "Counter-Strike: Global Offensive"
 
@@ -48,7 +48,9 @@ enum {
 	ID_VStudioRender,
 	ID_VDebugOverlay,
 	ID_VGUI_Surface,
-	ID_GameEventManager
+	ID_GameEventManager,
+	ID_InputSystem,
+	ID_EngineTraceClient
 };
 
 //Bomb status
@@ -108,7 +110,9 @@ struct bomb_data_s {
 extern std::string g_szModuleDir;
 extern std::string g_szLogFile;
 
+extern HMODULE g_hClientDll;
 extern HANDLE g_hSearchThread;
+
 extern CreateInterfaceFn g_appSystemFactory;
 extern client_import_s g_ClientImports[IMPORT_IFACE_AMOUNT];
 extern CHLClient_Context_s g_CHLClient_Ctx;
@@ -118,6 +122,9 @@ extern _IVEngineClient* g_pEngineClient;
 extern _CClientEntityList* g_pClientEntityList;
 extern _IVDebugOverlay* g_pDebugOverlay;
 extern _IGameEventManager2* g_pGameEventManager;
+extern _IInputSystem* g_pInputSystem;
+extern _IInput* g_pInput;
+extern _IEngineTrace* g_pEngineTrace;
 
 extern HWND g_hGameWindow;
 extern screensize_s g_ScreenSize;
@@ -128,6 +135,7 @@ extern bool g_bMenuToggle;
 extern bool g_bSnakeToggle;
 extern bool g_bInfoboxToggle;
 extern bool g_bIsInGame;
+extern bool g_bInAttack;
 
 extern CLog* g_pLog;
 extern CVFTHookMgr g_oHookMgr;
@@ -143,6 +151,7 @@ extern CzyConfigMgr::CCVar::cvar_s* g_pcvDecoyESP;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvBombESP;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvIgnoreTeammatesESP;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvColorModeESP;
+extern CzyConfigMgr::CCVar::cvar_s* g_pcvPlayerModelColor;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvMenuKey;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvSnakeKey;
 extern CzyConfigMgr::CCVar::cvar_s* g_pcvInfoboxKey;
