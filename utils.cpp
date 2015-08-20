@@ -7,7 +7,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -172,3 +172,37 @@ _C_BaseEntity* GetClientBaseEntity(int iEntIndex)
 	return (_C_BaseEntity*)pClientUnknown->GetBaseEntity();
 }
 //======================================================================
+
+//======================================================================
+bool PathFree(const Vector& vStart, const Vector& vEnd, const IHandleEntity* pIgnoreThisEnt, const unsigned int uiMask)
+{
+	//Trace from given start point to given endpoint and see if the traceline hits anything between these points
+
+	Ray_t oRay;
+	oRay.Init(vStart, vEnd);
+
+	CCustomTraceFilter oTraceFilter((IHandleEntity*)pIgnoreThisEnt);
+
+	trace_t trResult;
+	g_pEngineTrace->TraceRay(oRay, uiMask, &oTraceFilter, &trResult);
+	
+	return trResult.fraction == 1.0f;
+}
+//======================================================================
+
+//======================================================================
+bool SimulateLeftClick()
+{
+	//Simulate left mousebutton click
+
+	INPUT sInputs[2];
+
+	memset(sInputs, 0x00, sizeof(sInputs));
+
+	sInputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+	sInputs[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+	return SendInput(_countof(sInputs), sInputs, sizeof(INPUT)) == _countof(sInputs);
+}
+//======================================================================
+
