@@ -12,7 +12,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -224,6 +224,8 @@ void SOURCEAPI OnInitialize(void)
 	g_oPlayerMgr.SetTeamColor(PLAYER_TEAM_CT, g_oPlayerMgr.MakeColor24(121, 205, 205));
 	g_oPlayerMgr.SetTeamColor(PLAYER_TEAM_T, g_oPlayerMgr.MakeColor24(210, 105, 30));
 	g_oPlayerMgr.SetTeamColor(PLAYER_TEAM_VISIBLE, g_oPlayerMgr.MakeColor24(0, 255, 0));
+	g_oPlayerMgr.SetTeamPlayerModelColor(PLAYER_TEAM_CT, g_oPlayerMgr.MakeColor24(127, 255, 212));
+	g_oPlayerMgr.SetTeamPlayerModelColor(PLAYER_TEAM_T, g_oPlayerMgr.MakeColor24(255, 48, 48));
 
 	//Load game event resource file
 	if (!g_pGameEventManager->LoadEventsFromFile("resource/gameevents.res"))
@@ -416,7 +418,12 @@ void SOURCEAPI Hook_HudUpdate(bool bActive)
 	//Update player data
 	if (g_bIsInGame) {
 		for (EPLAYERID i = 1; i < MAX_CLIENTS; i++) {
-			g_oPlayerMgr.UpdateSlot(i);
+			if (g_oPlayerMgr.UpdateSlot(i)) {
+				if (g_oPlayerMgr.IsPlaying(i)) {
+					//Handle playermodel color
+					g_oPlayerMgr.SetPlayerModelColor(EID_TO_MID(i), g_pcvPlayerModelColor->bValue);
+				}
+			}
 		}
 	}
 
@@ -425,6 +432,33 @@ void SOURCEAPI Hook_HudUpdate(bool bActive)
 
 	//Update infobox data
 	UpdateInfoboxData();
+}
+//======================================================================
+
+//======================================================================
+bool SOURCEAPI Hook_IN_IsKeyDown(const char *name, bool& isdown)
+{
+	//Implementation of IN_IsKeyDown() hook
+	//Called for kbutton issues. Return 1 to indicate that the specified kbutton is held down, otherwise false
+	//Note: C++ class methods are cleaning up the function arguments themselves (via 'ret n') that's why it must be declared as __stdcall
+	//      Also they pass the this pointer via ECX to each method
+
+	//Static objects for class base and original method address pointer
+	SETUP_STATIC_OBJECTS_CHLCLIENT(FNI_IN_IsKeyDown);
+
+	DWORD dwReturnValue;
+
+	__asm {
+		push ECX; //Backup ECX
+		mov ECX, dwClassBase; //Copy start address of the CHLClient instance to ECX, the same the this-pointer holds. This is needed for every method call
+		push isdown; //Push function second argument on stack
+		push name; //Push function first argument on stack
+		call dwOrigFunction; //Call original IN_IsKeyDown method
+		mov dwReturnValue, EAX; //Copy function result from EAX to DWORD var
+		pop ECX; //Restore ECX
+	}
+
+	return dwReturnValue;
 }
 //======================================================================
 
@@ -438,7 +472,7 @@ int SOURCEAPI Hook_IN_KeyEvent(int eventcode, ButtonCode_t keynum, const char *p
 
 	//Static objects for class base and original method address pointer
 	SETUP_STATIC_OBJECTS_CHLCLIENT(FNI_IN_KeyEvent);
-	
+
 	if (keynum == g_pcvMenuKey->iValue) { //Check if menu key has been used
 		g_bMenuToggle = !g_bMenuToggle; //Toggle indicator
 
@@ -630,6 +664,35 @@ void SOURCEAPI Hook_SetViewAngles(QAngle& va)
 //======================================================================
 
 //======================================================================
+void SOURCEAPI Hook_CreateMove(int sequence_number, float input_sample_frametime, unsigned int active)
+{
+	//Implementation of CreateMove(() hook
+	//Hooked for interfering with input/movement calculation
+	//Note: C++ class methods are cleaning up the function arguments themselves (via 'ret n') that's why it must be declared as __stdcall
+	//      Also they pass the this pointer via ECX to each method
+
+	//Static objects for class base and original method address pointer
+	SETUP_STATIC_OBJECTS_CHLCLIENT(FNI_CreateMove);
+
+	__asm {
+		push ECX; //Backup ECX
+		mov ECX, dwClassBase; //Copy start address of the CHLClient instance to ECX, the same the this-pointer holds. This is needed for every method call
+		push active; //Push third function argument on stack
+		push input_sample_frametime; //Push second function argument on stack
+		push sequence_number; //Push first function argument on stack
+		call dwOrigFunction; //Call original CreateMove method
+		pop ECX; //Restore ECX
+	}
+
+	if (g_bIsInGame) { //Do following stuff only when being ingame
+		//Access CUserCmd and CVerifiedUserCmd base objects
+		CUserCmd* pCommands = *(CUserCmd**)((DWORD)g_pInput + 0xEC);
+		CVerifiedUserCmd* pVerifiedCommands = *(CVerifiedUserCmd**)((DWORD)g_pInput + 0xF0);
+	}
+}
+//======================================================================
+
+//======================================================================
 bool HookCHLClient(void)
 {
 	//Hook CHLClient method(s)
@@ -638,7 +701,9 @@ bool HookCHLClient(void)
 	HOOK_METHOD("CHLClient", FNI_Shutdown, Hook_Shutdown);
 	HOOK_METHOD("CHLClient", FNI_LevelInitPreEntity, Hook_LevelInitPreEntity);
 	HOOK_METHOD("CHLClient", FNI_HudUpdate, Hook_HudUpdate);
+	HOOK_METHOD("CHLClient", FNI_IN_IsKeyDown, Hook_IN_IsKeyDown);
 	HOOK_METHOD("CHLClient", FNI_IN_KeyEvent, Hook_IN_KeyEvent);
+	HOOK_METHOD("CHLClient", FNI_CreateMove, Hook_CreateMove);
 
 	return true;
 }
