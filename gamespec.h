@@ -7,6 +7,10 @@
 #include <vgui\ISurface.h>
 #include <vgui\IPanel.h>
 #include <igameevents.h>
+#include <inputsystem\iinputsystem.h>
+#include <in_buttons.h>
+#include <input.h>
+#include <util_shared.h>
 #include "memory.h"
 
 /*
@@ -15,7 +19,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -66,6 +70,52 @@
 	to perform specific tasks. The client.dll can now define the game mod via the 
 	exports and the imports.
 	
+	//Disassembly of CHLClient::IN_IsKeyDown() method implementation
+	//Purpose: Find base address of IInput or examine kbutton structure layout
+	19BA9950   55               PUSH EBP	; Backup old EBP on stack
+	19BA9951   8BEC             MOV EBP,ESP	; Copy ESP to EBP, stackframe setup done
+	19BA9953   FF75 08          PUSH DWORD PTR SS:[EBP+8]	; Push first argument onto stack as method argument (const char* name)
+	19BA9956   B9 10CF3C1E      MOV ECX,client.1E3CCF10	; Copy base address of IInput instance to ECX as this pointer
+	19BA995B   E8 E0840800      CALL client.19C31E40	; Call IInput::FindKey() method
+	19BA9960   85C0             TEST EAX,EAX	; Perform TEST-operation with result value in EAX
+	19BA9962   75 06            JNZ SHORT client.19BA996A	; If not NULL jump proceed with success-related part
+	19BA9964   32C0             XOR AL,AL	; Clear bits in AL (result = false)
+	19BA9966   5D               POP EBP	; Restore old EBP
+	19BA9967   C2 0800          RETN 8	; Restore return address and free stack space of method arguments
+	19BA996A   8A48 08          MOV CL,BYTE PTR DS:[EAX+8]	; Copy key->state into CL
+	19BA996D   8B45 0C          MOV EAX,DWORD PTR SS:[EBP+C]	; Copy second method argument to EAX (bool& isdown)
+	19BA9970   80E1 01          AND CL,1	; Perform bitwise AND operation with CL and 0x01 (check if key is down)
+	19BA9973   8808             MOV BYTE PTR DS:[EAX],CL	; Copy result from CL into isdown variable
+	19BA9975   B0 01            MOV AL,1	; Copy 1 to AL (result = true)
+	19BA9977   5D               POP EBP	; Restore old EBP
+	19BA9978   C2 0800          RETN 8	; Restore return address and free stack space of method arguments
+
+	//Disassembly of CInput::CreateMove() method implementation parts
+	//Purpose: Find address of CUserCmd and CVerifiedUserCmd
+	18464200   55               PUSH EBP	; Backup old EBP onto stack
+	18464201   8BEC             MOV EBP,ESP	; Copy ESP to EBP (stack frame pointer setup done)
+	18464203   83EC 18          SUB ESP,18	; Subtract 0x18 bytes from ESP to allocate memory for stack variables
+	18464206   53               PUSH EBX	; Backup EBX on stack
+	18464207   8B5D 08          MOV EBX,DWORD PTR SS:[EBP+8]	; Copy dword at [EBP+0x08] (int sequence_number) to EBX
+	...
+	18464223   8BF9             MOV EDI,ECX	; Copy ECX (CInput class instance base address) to EDI
+	18464225   8BCB             MOV ECX,EBX	; Copy EBX to ECX
+	...
+	18464229   8BB7 EC000000    MOV ESI,DWORD PTR DS:[EDI+EC]	; Copy dword at [EDI+EC] (CInput::m_pCommands) to ESI
+	1846422F   6BC1 64          IMUL EAX,ECX,64	; Calculate multiplication (signed) EAX = ECX * 0x64 (Result is offset to array entry (EAX/sizeof(DWORD])))
+	18464232   03F0             ADD ESI,EAX	; Add EAX to ESI to get absolute address of array entry (m_pCommands[EAX/sizeof(DWORD)])
+	18464234   8945 FC          MOV DWORD PTR SS:[EBP-4],EAX	; Copy address to [EBP-4]
+	18464237   6BC1 68          IMUL EAX,ECX,68	; Calculate multiplication (signed) EAX = ECX * 0x68 (Result is offset to array entry (EAX/sizeof(DWORD])))
+	1846423A   8BCE             MOV ECX,ESI	; Copy ESI to ECX (CUserCmd this-pointer)
+	1846423C   0387 F0000000    ADD EAX,DWORD PTR DS:[EDI+F0]	; Add value at dword [EDI+0xF0] (CInput::m_pVerifiedCommands) to EAX to have full address of array entry
+	18464242   8945 F8          MOV DWORD PTR SS:[EBP-8],EAX	; Copy address to [EBP-0x08]
+	18464245   E8 66E3F2FF      CALL client.183925B0	; Call cmd->Reset()
+	1846424A   807D 10 00       CMP BYTE PTR SS:[EBP+10],0	; Compare dword at [EBP+0x10] (bool active) with 0 (false)
+	1846424E   A1 80BEBC18      MOV EAX,DWORD PTR DS:[18BCBE80]	; Copy class instance address of CGlobalVarsBase to EAX
+	18464253   895E 04          MOV DWORD PTR DS:[ESI+4],EBX	; Copy EBX (int sequence_number) to [ESI+0x04] (cmd->command_number)
+	18464256   8B40 1C          MOV EAX,DWORD PTR DS:[EAX+1C]	; Copy dword at [EAX+0x1C] (CGlobalVarsBase::tickcount) to EAX
+	18464259   8946 08          MOV DWORD PTR DS:[ESI+8],EAX	; Copy value from EAX to [ESI+0x08] (cmd->tick_count)
+	1846425C   75 4F            JNZ SHORT client.184642AD	; Jump to part (comparision was from above)
 */
 
 //======================================================================
@@ -96,13 +146,15 @@ struct client_interface_export {
 	client_interface_export* pNextExport; //Pointer to next entry
 };
 
-//Indices of VClient016
+//Indices of VClient017
 enum {
 	FNI_PostInit = 3,
 	FNI_Shutdown = 4,
 	FNI_LevelInitPreEntity = 5,
 	FNI_HudUpdate = 10,
-	FNI_IN_KeyEvent = 20
+	FNI_IN_IsKeyDown = 19,
+	FNI_IN_KeyEvent = 20,
+	FNI_CreateMove = 21
 };
 
 //Indices of IPanel
@@ -142,6 +194,24 @@ typedef struct _player_info_s
 	ADD_PADDING(3, 500);
 	
 } _player_info_t;
+
+struct _CUserCmd {
+	DWORD dwVFTable;
+	
+	int command_number;
+	int tick_count;
+
+	ADD_PADDING(1, 36);
+
+	int buttons;
+};
+
+class CVerifiedUserCmd
+{
+public:
+	CUserCmd	m_cmd;
+	CRC32_t		m_crc;
+};
 
 abstract_class _IVEngineClient
 {
@@ -1162,12 +1232,260 @@ public:
 	virtual void SetFloat(const char *keyName, float value) = 0;
 	virtual void SetString(const char *keyName, const char *value) = 0;
 };
+
+class _IInputSystem : public _IAppSystem {
+public:
+	// Attach, detach input system from a particular window
+	// This window should be the root window for the application
+	// Only 1 window should be attached at any given time.
+	virtual void AttachToWindow( void* hWnd ) = 0; //9
+	virtual void DetachFromWindow( ) = 0;
+
+	// Enables/disables input. PollInputState will not update current 
+	// button/analog states when it is called if the system is disabled.
+	virtual void EnableInput( bool bEnable ) = 0;
+
+	// Enables/disables the windows message pump. PollInputState will not
+	// Peek/Dispatch messages if this is disabled
+	virtual void EnableMessagePump( bool bEnable ) = 0;
+
+	// Polls the current input state
+	virtual void PollInputState(unsigned int dwUnknown) = 0;
+
+	// Gets the time of the last polling in ms
+	virtual int GetPollTick() const = 0; //14
+
+	// Is a button down? "Buttons" are binary-state input devices (mouse buttons, keyboard keys)
+	virtual bool IsButtonDown( ButtonCode_t code ) const = 0; //15
+
+	// Returns the tick at which the button was pressed and released
+	virtual int GetButtonPressedTick( ButtonCode_t code ) const = 0;
+	virtual int GetButtonReleasedTick( ButtonCode_t code ) const = 0;
+
+	// Gets the value of an analog input device this frame
+	// Includes joysticks, mousewheel, mouse
+	virtual int GetAnalogValue( AnalogCode_t code ) const = 0;
+
+	// Gets the change in a particular analog input device this frame
+	// Includes joysticks, mousewheel, mouse
+	virtual int GetAnalogDelta( AnalogCode_t code ) const = 0; //19
+
+	// Returns the input events since the last poll
+	virtual int GetEventCount() const = 0;
+	virtual const InputEvent_t* GetEventData( ) const = 0;
+
+	// Posts a user-defined event into the event queue; this is expected
+	// to be called in overridden wndprocs connected to the root panel.
+	virtual bool ___Unknown_1(void) = 0;
+	//virtual void PostUserEvent( const InputEvent_t &event ) = 0;
+
+	// Returns the number of joysticks
+	//virtual int GetJoystickCount() const = 0;
+	virtual void ___Unknown_2(void) = 0;
+	virtual void ___Unknown_3(void) = 0;
+
+	virtual unsigned int ___Unknown_4(void) = 0;
+	virtual unsigned __int64 ___Unknown_5(void) = 0; //27
+	virtual void ___Unknown_6(unsigned int) = 0;
+	virtual void ___Unknown_7(void) = 0;
+	virtual void ___Unknown_8(void) = 0;
+	virtual void ___Unknown_9(void) = 0; //31
+	virtual void ___Unknown_10(unsigned int dwUnknown) = 0;
+	virtual unsigned int ___Unknown_11(void) = 0;
+	virtual void ___Unknown_12(unsigned int dwUnknown, bool bUnknown ) = 0;
+	// Enable/disable joystick, it has perf costs
+	//virtual void EnableJoystickInput( int nJoystick, bool bEnable ) = 0;
+
+	// Enable/disable diagonal joystick POV (simultaneous POV buttons down)
+	virtual void EnableJoystickDiagonalPOV( int nJoystick, bool bEnable ) = 0; //35
+
+	// Sample the joystick and append events to the input queue
+	virtual void SampleDevices( void ) = 0;
+
+	// FIXME: Currently force-feedback is only supported on the Xbox 360
+	virtual void SetRumble( float fLeftMotor, float fRightMotor, int userId = INVALID_USER_ID ) = 0;
+	//virtual void StopRumble( void ) = 0;
+	virtual void ___Unknown_13(unsigned int dwUnknown) = 0;
+
+	// Resets the input state
+	virtual void ResetInputState() = 0; //39
+
+	// Sets a player as the primary user - all other controllers will be ignored.
+	virtual void SetPrimaryUserId( int userId ) = 0;
+
+	// Convert back + forth between ButtonCode/AnalogCode + strings
+	virtual const char *ButtonCodeToString( ButtonCode_t code ) const = 0;
+	virtual const char *AnalogCodeToString( AnalogCode_t code ) const = 0;
+
+	// Sleeps until input happens. Pass a negative number to sleep infinitely
+	virtual void SleepUntilInput( int nMaxSleepTimeMS = -1 ) = 0; //44
+
+	virtual ButtonCode_t StringToButtonCode( const char *pString ) const = 0; //45
+	//virtual AnalogCode_t StringToAnalogCode( const char *pString ) const = 0;
+
+	// Convert back + forth between virtual codes + button codes
+	// FIXME: This is a temporary piece of code
+	virtual ButtonCode_t VirtualKeyToButtonCode( int nVirtualKey ) const = 0; //46
+	virtual int ButtonCodeToVirtualKey( ButtonCode_t code ) const = 0; //47
+	//virtual ButtonCode_t ScanCodeToButtonCode( int lParam ) const = 0;
+
+	// How many times have we called PollInputState?
+	virtual int GetPollCount() const = 0; //48
+
+	// Sets the cursor position
+	virtual void SetCursorPosition( int x, int y ) = 0; //49
+};
+
+abstract_class _IInput
+{
+public:
+	// Initialization/shutdown of the subsystem
+	virtual	void		Init_All( void ) = 0;
+	virtual void		Shutdown_All( void ) = 0;
+	// Latching button states
+	virtual int			GetButtonBits( int ) = 0;
+	// Create movement command
+	virtual void		CreateMove ( int sequence_number, float input_sample_frametime, bool active ) = 0;
+	virtual void		ExtraMouseSample( float frametime, bool active ) = 0;
+	virtual bool		WriteUsercmdDeltaToBuffer( bf_write *buf, int from, int to, bool isnewcommand, unsigned int dwUnknown ) = 0;
+	virtual void		EncodeUserCmdToBuffer( bf_write& buf, int slot, unsigned int dwUnknown ) = 0;
+	virtual void		DecodeUserCmdFromBuffer( bf_read& buf, int slot, unsigned int dwUnknown ) = 0;
+
+	virtual CUserCmd	*GetUserCmd( int slot, int sequence_number ) = 0;
+
+	virtual void		MakeWeaponSelection( C_BaseCombatWeapon *weapon ) = 0;
+
+	// Retrieve key state
+	virtual float		KeyState ( struct kbutton_t *key ) = 0;
+	// Issue key event
+	virtual int			KeyEvent( int eventcode, ButtonCode_t keynum, const char *pszCurrentBinding ) = 0;
+	// Look for key
+	virtual struct kbutton_t	*FindKey( const char *name ) = 0;
+
+	// Issue commands from controllers
+	virtual void		ControllerCommands( void ) = 0;
+
+	/* 14 methods confirmed */
+
+	// Extra initialization for some joysticks
+	virtual void		Joystick_Advanced( void ) = 0;
+	virtual void		Joystick_SetSampleTime( float frametime ) = 0;
+	virtual void		IN_SetSampleTime( float frametime ) = 0;
+
+	// Accumulate mouse delta
+	virtual void		AccumulateMouse( void ) = 0;
+	// Activate/deactivate mouse
+	virtual void		ActivateMouse( void ) = 0;
+	virtual void		DeactivateMouse( void ) = 0;
+
+	// Clear mouse state data
+	virtual void		ClearStates( void ) = 0;
+	// Retrieve lookspring setting
+	virtual float		GetLookSpring( void ) = 0;
+
+	// Retrieve mouse position
+	virtual void		GetFullscreenMousePos( int *mx, int *my, int *unclampedx = 0, int *unclampedy = 0 ) = 0;
+	virtual void		SetFullscreenMousePos( int mx, int my ) = 0;
+	virtual void		ResetMouse( void ) = 0;
+	virtual	float		GetLastForwardMove( void ) = 0;
+
+	// Third Person camera ( TODO/FIXME:  Move this to a separate interface? )
+	virtual void		CAM_Think( void ) = 0;
+	virtual int			CAM_IsThirdPerson( void ) = 0;
+	virtual void		CAM_GetCameraOffset( Vector& ofs ) = 0;
+	virtual void		CAM_ToThirdPerson(void) = 0;
+	virtual void		CAM_ToFirstPerson(void) = 0;
+	virtual void		CAM_StartMouseMove(void) = 0;
+	virtual void		CAM_EndMouseMove(void) = 0;
+	virtual void		CAM_StartDistance(void) = 0;
+	virtual void		CAM_EndDistance(void) = 0;
+	virtual int			CAM_InterceptingMouse( void ) = 0;
+
+	// orthographic camera info	( TODO/FIXME:  Move this to a separate interface? )
+	virtual void		CAM_ToOrthographic() = 0;
+	virtual	bool		CAM_IsOrthographic() const = 0;
+	virtual	void		CAM_OrthographicSize( float& w, float& h ) const = 0;
+
+#if defined( HL2_CLIENT_DLL )
+	// IK back channel info
+	virtual void		AddIKGroundContactInfo( int entindex, float minheight, float maxheight ) = 0;
+#endif
+
+	virtual void		LevelInit( void ) = 0;
+
+	// Causes an input to have to be re-pressed to become active
+	virtual void		ClearInputButton( int bits ) = 0;
+
+	virtual	void		CAM_SetCameraThirdData( struct CameraThirdData_t *pCameraData, const QAngle &vecCameraOffset ) = 0;
+	virtual void		CAM_CameraThirdThink( void ) = 0;
+};
+
+abstract_class _IEngineTrace
+{
+public:
+	virtual unsigned int __Unknown_1(unsigned int dwUnknown1, unsigned int dwUnknown2, unsigned int dwUnknown3) = 0;
+
+	// Returns the contents mask + entity at a particular world-space position
+	virtual int		GetPointContents( const Vector &vecAbsPosition, IHandleEntity** ppEntity = NULL ) = 0;
+	
+	// Get the point contents, but only test the specific entity. This works
+	// on static props and brush models.
+	//
+	// If the entity isn't a static prop or a brush model, it returns CONTENTS_EMPTY and sets
+	// bFailed to true if bFailed is non-null.
+	virtual int		GetPointContents_Collideable( ICollideable *pCollide, const Vector &vecAbsPosition ) = 0;
+
+	// Traces a ray against a particular entity
+	virtual void	ClipRayToEntity( const Ray_t &ray, unsigned int fMask, IHandleEntity *pEnt, trace_t *pTrace ) = 0;
+
+	// Traces a ray against a particular entity
+	virtual void	ClipRayToCollideable( const Ray_t &ray, unsigned int fMask, ICollideable *pCollide, trace_t *pTrace ) = 0;
+
+	// A version that simply accepts a ray (can work as a traceline or tracehull)
+	virtual void	TraceRay( const Ray_t &ray, unsigned int fMask, ITraceFilter *pTraceFilter, trace_t *pTrace ) = 0; //5
+
+	// A version that sets up the leaf and entity lists and allows you to pass those in for collision.
+	virtual void	SetupLeafAndEntityListRay( const Ray_t &ray, CTraceListData &traceData ) = 0;
+	virtual void    SetupLeafAndEntityListBox( const Vector &vecBoxMin, const Vector &vecBoxMax, CTraceListData &traceData ) = 0;
+	virtual void	TraceRayAgainstLeafAndEntityList( const Ray_t &ray, CTraceListData &traceData, unsigned int fMask, ITraceFilter *pTraceFilter, trace_t *pTrace ) = 0;
+
+	// A version that sweeps a collideable through the world
+	// abs start + abs end represents the collision origins you want to sweep the collideable through
+	// vecAngles represents the collision angles of the collideable during the sweep
+	virtual void	SweepCollideable( ICollideable *pCollide, const Vector &vecAbsStart, const Vector &vecAbsEnd, 
+		const QAngle &vecAngles, unsigned int fMask, ITraceFilter *pTraceFilter, trace_t *pTrace ) = 0;
+
+	// Enumerates over all entities along a ray
+	// If triggers == true, it enumerates all triggers along a ray
+	virtual void	EnumerateEntities( const Ray_t &ray, bool triggers, IEntityEnumerator *pEnumerator ) = 0;
+
+	// Same thing, but enumerate entitys within a box
+	virtual void	EnumerateEntities( const Vector &vecAbsMins, const Vector &vecAbsMaxs, IEntityEnumerator *pEnumerator ) = 0;
+
+	// Convert a handle entity to a collideable.  Useful inside enumer
+	virtual ICollideable *GetCollideable( IHandleEntity *pEntity ) = 0; //12
+
+	// HACKHACK: Temp for performance measurments
+	virtual int GetStatByIndex( int index, bool bClear ) = 0;
+
+
+	//finds brushes in an AABB, prone to some false positives
+	virtual unsigned int __Unknown_2(unsigned int dwUnknown1, unsigned int dwUnknown2, unsigned int dwUnknown3, unsigned int dwUnknown4, unsigned int dwUnknown5) = 0;
+	//virtual void GetBrushesInAABB( const Vector &vMins, const Vector &vMaxs, CUtlVector<int> *pOutput, int iContentsMask = 0xFFFFFFFF ) = 0;
+
+	//Creates a CPhysCollide out of all displacements wholly or partially contained in the specified AABB
+	virtual CPhysCollide* GetCollidableFromDisplacementsInAABB( const Vector& vMins, const Vector& vMaxs ) = 0;
+
+	virtual unsigned int __Unknown_3(void) = 0;
+	virtual void __Unknown_4(unsigned int dwUnknown1, unsigned int dwUnknown2) = 0;
+};
 //======================================================================
 
 //======================================================================
 LPVOID FindClientExport(HMODULE hClientDll, LPCSTR lpszExportName);
 CreateInterfaceFn FindAppSystemFactory(header_info_s* pEngineDllHeader);
-ICvar* FindICvarClass(header_info_s* pClientDllHeader);
+ICvar* FindICvarClassInstance(header_info_s* pClientDllHeader);
+class IInput* FindIInputClassInstance(header_info_s* pClientDllHeader);
 //======================================================================
 
 #endif
