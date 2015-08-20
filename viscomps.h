@@ -11,7 +11,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -20,7 +20,8 @@
 
 namespace CzyVisualComponents { //Visual components namespace
 	#define abstract_class class
-	#define VISCOMP_MAX_STRING_LEN 2048
+	#define CZYVC_MAX_STRING_LEN 2048
+	#define CZYVC_INVALID_ITEM_ID std::string::npos
 
 	extern CzyConfigMgr::CConfigInt* nm_pConfigInt;
 
@@ -103,7 +104,7 @@ namespace CzyVisualComponents { //Visual components namespace
 		CzyConfigMgr::CCVar::cvar_s* m_pCVar; //Pointer to cvar data if any
 		bool m_bShow; //Indicator whether this component is shown or not
 		bool m_bGotFocus; //Indicator whether this component has currently focus
-		char m_szText[VISCOMP_MAX_STRING_LEN]; //Text field of the component
+		char m_szText[CZYVC_MAX_STRING_LEN]; //Text field of the component
 		TpfnEventFunc m_pEventFunction; //Affected event function if any
 	public:
 		CBaseComponent() { memset(&this->m_wndInfo, 0x00, sizeof(windowinfo_s)); memset(this->m_szIdentifier, 0x00, sizeof(this->m_szIdentifier)); this->m_bInitialized = false; this->m_pCVar = NULL; m_bGotFocus = false; this->m_szText[0] = 0; m_pEventFunction = NULL; }
@@ -121,6 +122,13 @@ namespace CzyVisualComponents { //Visual components namespace
 			//Return indicator flag
 
 			return this->m_bShow;
+		}
+
+		virtual bool HasFocus(void)
+		{
+			//Return indicator flag
+
+			return this->m_bGotFocus;
 		}
 
 		virtual bool Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface)
@@ -542,10 +550,10 @@ namespace CzyVisualComponents { //Visual components namespace
 		}
 	};
 
-	#define FORM_IDENT "form"
-	#define SHELL_TOP_HEIGHT 31
-	#define SHELL_LRB_SIZE 6
-	#define SHELL_TOP_CLOSERECT_WIDTH 30
+	#define CZYVC_FORM_IDENT "form"
+	#define CZYVC_SHELL_TOP_HEIGHT 31
+	#define CZYVC_SHELL_LRB_SIZE 6
+	#define CZYVC_SHELL_TOP_CLOSERECT_WIDTH 30
 	class CForm : public CBaseComponent { //Main form component class
 	private:
 		struct form_component_s { //Form components
@@ -572,7 +580,7 @@ namespace CzyVisualComponents { //Visual components namespace
 		CForm() : m_bToggleBoxHover(false) { this->m_bFormMove = false; }
 		~CForm() { }
 
-		bool Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
+		bool Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
 		void Free(void);
 
 		bool IsVisible(void) { return CBaseComponent::IsVisible(); }
@@ -633,10 +641,10 @@ namespace CzyVisualComponents { //Visual components namespace
 			this->m_raTitleBar.res.a = this->m_wndInfo.w - this->m_wndInfo.borderSize - (this->m_wndInfo.borderSize * 2 + this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist);
 			this->m_raTitleBar.res.b = this->m_wndInfo.fontSizeH + this->m_wndInfo.fontLineDist * 2;
 
-			this->m_raToggleBox.pos.a = this->m_wndInfo.x + this->m_wndInfo.w - (SHELL_TOP_CLOSERECT_WIDTH + SHELL_LRB_SIZE + SHELL_LRB_SIZE + this->m_wndInfo.borderSize);
+			this->m_raToggleBox.pos.a = this->m_wndInfo.x + this->m_wndInfo.w - (CZYVC_SHELL_TOP_CLOSERECT_WIDTH + CZYVC_SHELL_LRB_SIZE + CZYVC_SHELL_LRB_SIZE + this->m_wndInfo.borderSize);
 			this->m_raToggleBox.pos.b = this->m_wndInfo.y + 1;
-			this->m_raToggleBox.res.a = SHELL_TOP_CLOSERECT_WIDTH;
-			this->m_raToggleBox.res.b = SHELL_TOP_HEIGHT - SHELL_LRB_SIZE;
+			this->m_raToggleBox.res.a = CZYVC_SHELL_TOP_CLOSERECT_WIDTH;
+			this->m_raToggleBox.res.b = CZYVC_SHELL_TOP_HEIGHT - CZYVC_SHELL_LRB_SIZE;
 		}
 
 		void OnMouseMove(int x, int y) {} //Unused
@@ -653,14 +661,14 @@ namespace CzyVisualComponents { //Visual components namespace
 		const char* SelectedTextInput(void);
 	};
 
-	#define LABEL_IDENT "label"
+	#define CZYVC_LABEL_IDENT "label"
 	class CLabel : public CBaseComponent { //Label component class
 	private:
 	public:
 		CLabel() { }
 		~CLabel() { }
 
-		bool Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
+		bool Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
 		void Free(void);
 
 		void Process(void) {} //Unused
@@ -699,7 +707,7 @@ namespace CzyVisualComponents { //Visual components namespace
 		bool SetEventFunc(const char* lpszAliasName) { return false; } //The label doesn't need an event alias
 	};
 
-	#define BUTTON_IDENT "button"
+	#define CZYVC_BUTTON_IDENT "button"
 	class CButton : public CBaseComponent { //Button component class
 	private:
 		int m_iTextOffset; //Text offset related to button mouse key press/release
@@ -709,7 +717,7 @@ namespace CzyVisualComponents { //Visual components namespace
 		CButton() { this->m_iTextOffset = 0; this->m_bHover = false; this->m_bMouseDown = false; }
 		~CButton() { }
 
-		bool Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
+		bool Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
 		void Free(void);
 
 		void Process(void) {} //Unused
@@ -747,7 +755,7 @@ namespace CzyVisualComponents { //Visual components namespace
 		bool SetCVar(const char* lpszVarName) { return false; } //The button doesn't need a script variable
 	};
 
-	#define CHECKBOX_IDENT "checkbox"
+	#define CZYVC_CHECKBOX_IDENT "checkbox"
 	class CCheckbox : public CBaseComponent { //Checkbox component class
 	private:
 		bool m_bValue; //Current value
@@ -756,7 +764,7 @@ namespace CzyVisualComponents { //Visual components namespace
 		CCheckbox() { this->m_bHover = false; }
 		~CCheckbox() { }
 
-		bool Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
+		bool Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
 		void Free(void);
 
 		void Process(void) {} //Unused
@@ -795,21 +803,21 @@ namespace CzyVisualComponents { //Visual components namespace
 		bool SetEventFunc(const char* lpszAliasName) { return false; }
 	};
 
-	#define TEXTBOX_IDENT "textbox"
-	#define TEXTBOX_DEFAULT_LENGTH 35
-	#define TEXTBOX_DELAY 597
+	#define CZYVC_TEXTBOX_IDENT "textbox"
+	#define CZYVC_TEXTBOX_DEFAULT_LENGTH 35
+	#define CZYVC_TEXTBOX_DELAY 597
 	class CTextbox : public CBaseComponent { //Textbox component class
 	private:
-		char m_szString[VISCOMP_MAX_STRING_LEN]; //Current string
+		char m_szString[CZYVC_MAX_STRING_LEN]; //Current string
 		unsigned int m_uiTextLen; //Text length of input text, width is calculated according to it
 		DWORD m_dwTimerCur, m_dwTimerInit; //Timer members
 		bool m_bDrawUnderline; //Indicator whether to draw underline
 		bool m_bHover; //Indicator whether the mouse is above this component
 	public:
-		CTextbox() { this->m_uiTextLen = TEXTBOX_DEFAULT_LENGTH; this->m_bDrawUnderline = false; this->m_bHover = false; }
+		CTextbox() { this->m_uiTextLen = CZYVC_TEXTBOX_DEFAULT_LENGTH; this->m_bDrawUnderline = false; this->m_bHover = false; }
 		~CTextbox() { }
 
-		bool Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
+		bool Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
 		void Free(void);
 
 		void Process(void);
@@ -853,14 +861,14 @@ namespace CzyVisualComponents { //Visual components namespace
 		void UpdateText(void);
 	};
 
-	#define GROUPBOX_IDENT "groupbox"
-	#define GROUPBOX_LINETOTEXTLEN 20
+	#define CZYVC_GROUPBOX_IDENT "groupbox"
+	#define CZYVC_GROUPBOX_LINETOTEXTLEN 20
 	class CGroupbox : public CBaseComponent { //Groupbox component class
 	public:
 		CGroupbox() { }
 		~CGroupbox() { }
 
-		bool Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface) { return CBaseComponent::Initialize(lpszIdent, lpszName, pWindowInfo, pDrawingInterface); } //Unused
+		bool Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface) { return CBaseComponent::Initialize(CZYVC_GROUPBOX_IDENT, lpszName, pWindowInfo, pDrawingInterface); } //Unused
 		void Free(void) { CBaseComponent::Free(); } //Unused
 
 		void Process(void) {} //Unused
@@ -899,9 +907,9 @@ namespace CzyVisualComponents { //Visual components namespace
 		bool SetEventFunc(const char* lpszAliasName) { return false; } //The groupbox doesn't need a script alias
 	};
 
-	#define LISTBOX_IDENT "listbox"
-	#define LISTBOX_INVALID_ITEM_ID std::string::npos
-	#define LISTBOX_NAVIGATOR_WIDTH 20
+	#define CZYVC_LISTBOX_IDENT "listbox"
+	#define CZYVC_LISTBOX_INVALID_ITEM_ID CZYVC_INVALID_ITEM_ID
+	#define CZYVC_LISTBOX_NAVIGATOR_WIDTH 20
 	class CListbox : public CBaseComponent { //Listbox component class
 		struct lb_item_s {
 			std::string szExpression;
@@ -915,10 +923,10 @@ namespace CzyVisualComponents { //Visual components namespace
 
 		size_t FindItemByCoord(int x, int y);
 	public:
-		CListbox() : m_uiSelectedItem(LISTBOX_INVALID_ITEM_ID), m_iCurMousePosX(-1), m_iCurMousePosY(-1), m_uiDrawingIndex(0) { }
+		CListbox() : m_uiSelectedItem(CZYVC_LISTBOX_INVALID_ITEM_ID), m_iCurMousePosX(-1), m_iCurMousePosY(-1), m_uiDrawingIndex(0) { }
 		~CListbox() { this->m_vItems.clear(); }
 
-		bool Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface) { return CBaseComponent::Initialize(lpszIdent, lpszName, pWindowInfo, pDrawingInterface); }
+		bool Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface) { return CBaseComponent::Initialize(CZYVC_LISTBOX_IDENT, lpszName, pWindowInfo, pDrawingInterface); }
 		void Free(void) { CBaseComponent::Free(); }
 
 		void Process(void) {} //Unused
@@ -970,16 +978,16 @@ namespace CzyVisualComponents { //Visual components namespace
 		void ScrollToEnd(void);
 	};
 
-	#define IMAGEBOX_IDENT "imagebox"
-	#define IMAGEBOX_INVALID_IMAGE_ID std::string::npos
+	#define CZYVC_IMAGEBOX_IDENT "imagebox"
+	#define CZYVC_IMAGEBOX_INVALID_IMAGE_ID CZYVC_INVALID_ITEM_ID
 	class CImagebox : public CBaseComponent { //Imagebox component class
 	private:
 		size_t m_uiImageId;
 	public:
-		CImagebox() : m_uiImageId(IMAGEBOX_INVALID_IMAGE_ID) { }
+		CImagebox() : m_uiImageId(CZYVC_IMAGEBOX_INVALID_IMAGE_ID) { }
 		~CImagebox() { }
 
-		bool Initialize(LPCSTR lpszIdent, LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface) { return CBaseComponent::Initialize(lpszIdent, lpszName, pWindowInfo, pDrawingInterface); }
+		bool Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface) { return CBaseComponent::Initialize(CZYVC_IMAGEBOX_IDENT, lpszName, pWindowInfo, pDrawingInterface); }
 		void Free(void) { CBaseComponent::Free(); }
 
 		void Process(void) {} //Unused
@@ -1020,15 +1028,149 @@ namespace CzyVisualComponents { //Visual components namespace
 		void SetImage(const size_t uiImageId) { this->m_uiImageId = uiImageId; }
 	};
 
+	#define CZYVC_CONTEXTMENU_IDENT "contextmenu"
+	#define CZYVC_CONTEXTMENU_INVALID_ITEM_ID CZYVC_INVALID_ITEM_ID
+	#define CZYVC_CONTEXTMENU_BORDER_TO_CONTENT_DIST 3
+	class CContextMenu : public CBaseComponent { //Contextmenu component class
+	public:
+		typedef void (*TpfnItemClickEvent)(class CContextMenu* pThisMenu, const size_t uiItemId);
+	private:
+		struct ctx_menu_item_s {
+			char szText[MAX_PATH];
+			bool bIsPlaceHolder;
+			TpfnItemClickEvent pfnItemClickEventFunc;
+		};
+	private:
+		CBaseComponent* m_pTargetComponent; //Component where this contextmenu is attached to
+		std::vector<ctx_menu_item_s> m_vCtxItems; //List of items
+		int m_iCurMousePosX, m_iCurMousePosY; //Current mouse position
+		size_t m_uiCurrentMenuWidth; //Current menu width
+		size_t m_uiCurrentMenuHeight; //Current menu height
+
+		const size_t GetContextMenuWidth(void);
+		const size_t GetContextMenuHeight(void);
+		void UpdateMenuSize(void);
+		size_t FindItemByCoord(int x, int y);
+	public:
+		CContextMenu() : m_pTargetComponent(NULL), m_uiCurrentMenuWidth(0), m_uiCurrentMenuHeight(0) {}
+		~CContextMenu() { this->m_vCtxItems.clear(); }
+
+		bool Initialize(LPCSTR lpszName, CBaseComponent* pAttachToThisComponent, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
+
+		size_t AddItem(const char* pszItemText, const TpfnItemClickEvent pfnItemClickEventFunc);
+		size_t InsertItem(const char* pszItemText, const size_t uiAfterThisItem, const TpfnItemClickEvent pfnItemClickEventFunc);
+
+		size_t AddDelimiter(void) { return this->AddItem("-", NULL); }
+		size_t InsertDelimiter(const size_t uiAfterThisItem) { return this->InsertItem("-", uiAfterThisItem, NULL); }
+		
+		bool RemoveItem(const size_t uiItemId);
+		void Clear(void) { this->m_vCtxItems.clear(); this->m_uiCurrentMenuWidth = 0; }
+
+		size_t ItemCount(void) { return this->m_vCtxItems.size(); }
+
+		void Raise(const int x, const int y);
+
+		bool NeedVariable(void) { return false; } //Contextmenu doesn't need a variable
+		bool NeedEventFunction(void) { return false; } //Contextmenu doesn't need an alias
+
+		bool SetLocation(int x, int y) { return CBaseComponent::SetLocation(x, y, false); }
+
+		void Draw(void);
+		void Process(void) {} //Unused
+
+		void KeyEvent(int iKey, bool bDown) {} //Unused
+		void MouseEvent(int x, int y, int iMouseKey, bool bDown);
+
+		void OnMouseButton(int iMouseKey, bool bDown);
+		void OnMouseMove(int x, int y);
+		void OnKeyButton(int iKey, bool bDown) {} //Unused
+
+		void OnFocus(bool bStatus);
+
+		bool SetCVar(const char* lpszVarName) { return false; } //The contextmenu doesn't need a script variable
+		bool SetEventFunc(const char* lpszAliasName) { return false; } //The contextmenu doesn't need a script alias
+	};
+
+	#define CZYVC_PROGRESSBAR_IDENT "progressbar"
+	#define CZYVC_PROGRESSBAR_DEFAULT_HEIGHT 24
+	#define CZYVC_PROGRESSBAR_BLOCK_WIDTH 20
+	#define CZYVC_PROGRESSBAR_BLOCK_DIST 2
+	class CProgressBar : public CBaseComponent { //ProgressBar component class
+	private:
+		int m_iBlockWidth; //Width of each single block
+		int m_iBlockDist; //Distance between each block
+		int m_iMin; //Minimum value
+		int m_iMax; //Maximum value
+		int m_iValue; //Current value between min and max
+
+		int GetAmountOfBlocks(void);
+		int GetBlockNum(int iValue);
+	public:
+		CProgressBar() : m_iBlockWidth(CZYVC_PROGRESSBAR_BLOCK_WIDTH), m_iBlockDist(CZYVC_PROGRESSBAR_BLOCK_DIST), m_iMin(0), m_iMax(10), m_iValue(0) { }
+		~CProgressBar() { }
+
+		bool Initialize(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
+		void Free(void) { CBaseComponent::Free(); }
+
+		void Process(void) {} //Unused
+		void Draw(void);
+
+		void KeyEvent(int iKey, bool bDown) {} //Unused
+		void MouseEvent(int x, int y, int iMouseKey, bool bDown) {} //Unused
+
+		bool SetLocation(int x, int y) { return CBaseComponent::SetLocation(x, y, false); }
+		const component_size_s* GetLocation(void) { return CBaseComponent::GetLocation(); }
+		bool SetSize(int w, int h) { return CBaseComponent::SetSize(w, h, true); }
+		const component_size_s* GetSize(void) { return CBaseComponent::GetSize(); }
+
+		bool InComponentRange(int x, int y) { return CBaseComponent::InComponentRange(x, y); }
+
+		bool SetValue(void* pValuePtr) { return true; } //Unused
+
+		bool NeedVariable(void) { return false; } //ProgressBar doesn't need a variable
+		bool NeedEventFunction(void) { return false; } //ProgressBar doesn't need an alias
+
+		void Show(void) {} //Unused
+		void Hide(void) {} //Unused
+		void ToggleVisibility(void) {} //Unused
+
+		void SetFont(const char* lpszFont) { CBaseComponent::SetFont(lpszFont); }
+
+		void OnMouseMove(int x, int y) {} //Unused
+		void OnMouseButton(int iMouseKey, bool bDown) {} //Unused
+		void OnKeyButton(int iKey, bool bDown) {} //Unused
+		void OnMove(int x, int y) { CBaseComponent::OnMove(x, y); }
+		void OnFocus(bool bStatus) {} //Unused
+
+		bool SetText(const char* lpszText) { return false; }
+		const char* GetText(void) { return NULL; }
+		bool SetCVar(const char* lpszVarName) { return false; }
+		bool SetEventFunc(const char* lpszAliasName) { return false; }
+
+		void SetBlockWidth(int iWidth) { this->m_iBlockWidth = iWidth; }
+		void SetBlockDist(int iDist) { this->m_iBlockDist = iDist; }
+
+		void SetRange(int iMin, int iMax);
+		void SetMinValue(int iMin) { this->m_iMin = iMin; }
+		void SetMaxValue(int iMax) { this->m_iMax = iMax; }
+		void SetValue(int iValue);
+
+		int GetMinValue(void) { return this->m_iMin; }
+		int GetMaxValue(void) { return this->m_iMax; }
+		int GetValue(void) { return this->m_iValue; }
+	};
+
 	bool SetConfigInt(const CzyConfigMgr::CConfigInt* pConfigInt);
 	CForm* CreateForm(LPCSTR lpszName, const windowinfo_s* pWindowInfo, const drawinginterface_s* pDrawingInterface);
-	bool AttachLabel(CForm* pForm, LPCSTR lpszName, int x, int y, unsigned char r, unsigned char g, unsigned char b, unsigned char a, const char* lpszText);
-	bool AttachButton(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const char* lpszAffectedAlias);
-	bool AttachCheckbox(CForm* pForm, LPCSTR lpszName, int x, int y, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const char* lpszAffectedVar, bool bInitialValue);
-	bool AttachTextBox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const char* lpszAffectedVar, unsigned int uiTextLen);
-	bool AttachGroupbox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pFrameColor, const char* lpszText);
-	bool AttachListbox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pItemColor, color32_s* pBackgroundColor, color32_s* pSelectedItemColor);
-	bool AttachImagebox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, const size_t uiImageId);
+	CLabel* AttachLabel(CForm* pForm, LPCSTR lpszName, int x, int y, unsigned char r, unsigned char g, unsigned char b, unsigned char a, const char* lpszText);
+	CButton* AttachButton(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const TpfnEventFunc pfnEventFunc);
+	CCheckbox* AttachCheckbox(CForm* pForm, LPCSTR lpszName, int x, int y, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const char* lpszAffectedVar, bool bInitialValue);
+	CTextbox* AttachTextBox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pBoxColor, color32_s* pHoverColor, const char* lpszText, const char* lpszAffectedVar, unsigned int uiTextLen);
+	CGroupbox* AttachGroupbox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pTextColor, color32_s* pFrameColor, const char* lpszText);
+	CListbox* AttachListbox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pItemColor, color32_s* pBackgroundColor, color32_s* pSelectedItemColor);
+	CImagebox* AttachImagebox(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, const size_t uiImageId);
+	CContextMenu* CreateContextMenu(CForm* pForm, LPCSTR lpszName, LPCSTR lpszTargetCompName, color32_s* pBackgroundColor, color32_s* pSelColor, color32_s* pTextColor);
+	CProgressBar* AttachProgressBar(CForm* pForm, LPCSTR lpszName, int x, int y, int w, int h, color32_s* pBoxColor, color32_s* pBlockColor, int iMin, int iMax, int iStartValue);
 	void FreeForm(CForm* pForm);
 };
 #endif
