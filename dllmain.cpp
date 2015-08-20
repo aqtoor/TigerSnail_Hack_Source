@@ -15,7 +15,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -133,6 +133,8 @@ DWORD WINAPI SearchThread(LPVOID lpvArguments)
 		ExitError("Failed to get header information of client.dll");
 	}
 
+	g_hClientDll = hdrClient.dwModuleBase; //Save module handle
+
 	//Get segment information of engine.dll
 	header_info_s hdrEngine;
 	if (!GetModuleSegmentInfo("engine.dll", &hdrEngine)) {
@@ -161,14 +163,20 @@ DWORD WINAPI SearchThread(LPVOID lpvArguments)
 	if (!InitImportableObjects(g_appSystemFactory))
 		ExitError("Failed to initialize importable interface objects");
 
-	//Save IVEngineClient instance pointer
+	//Copy IVEngineClient instance pointer
 	g_pEngineClient = (_IVEngineClient*)g_ClientImports[ID_VEngineClient].pInterfaceObject;
 
-	//Save IVDebugOverlay instance pointer
+	//Copy IVDebugOverlay instance pointer
 	g_pDebugOverlay = (_IVDebugOverlay*)g_ClientImports[ID_VDebugOverlay].pInterfaceObject;
 
-	//Save IGameEventManager instance pointer
+	//Copy IGameEventManager instance pointer
 	g_pGameEventManager = (_IGameEventManager2*)g_ClientImports[ID_GameEventManager].pInterfaceObject;
+
+	//Copy IEngineClient instance pointer
+	g_pEngineTrace = (_IEngineTrace*)g_ClientImports[ID_EngineTraceClient].pInterfaceObject;
+
+	//Save IInputSystem instance pointer
+	g_pInputSystem = (_IInputSystem*)g_ClientImports[ID_InputSystem].pInterfaceObject;
 	
 	//Initialize drawing
 	if (!SetupDrawingInterface(&g_ClientImports[ID_VGUI_Surface], "Verdana", 15))
@@ -202,7 +210,7 @@ DWORD WINAPI SearchThread(LPVOID lpvArguments)
 	memcpy(g_CHLClient_Ctx.dwVFTBackup, g_CHLClient_Ctx.pdwCHLClientVFTable, CHLCLIENT_VFT_SIZE * sizeof(DWORD));
 	
 	//Find ICvar class
-	g_ICvar_Ctx.pICvar = FindICvarClass(&hdrClient);
+	g_ICvar_Ctx.pICvar = FindICvarClassInstance(&hdrClient);
 	if (!g_ICvar_Ctx.pICvar)
 		ExitError("Failed to find ICvar class object");
 
@@ -225,12 +233,19 @@ DWORD WINAPI SearchThread(LPVOID lpvArguments)
 	g_IPanel_Ctx.pdwIPanelVFTable = *(PDWORD*)g_IPanel_Ctx.pIPanel;
 	memcpy(g_IPanel_Ctx.dwVFTBackup, g_IPanel_Ctx.pdwIPanelVFTable, IPANEL_VFT_SIZE);
 
+	//Find IInput class instance
+	g_pInput = (_IInput*)FindIInputClassInstance(&hdrClient);
+	if (!g_pInput)
+		ExitError("Failed to get IInput object");
+	DWORD* pdw = *(DWORD**)g_pInput;
+	//TESTchar lol[250];sprintf(lol,"%p", pdw[3]);MessageBoxA(0,lol,"lol",0);
 	//Log all found objects into the log-file
 	g_pLog->MsgFmt("appSystemFactory function: %p", g_appSystemFactory);
 	g_pLog->MsgFmt("CHLClient class instance: %p", g_CHLClient_Ctx.pCHLClient);
 	g_pLog->MsgFmt("IClientEntityList class instance: %p", g_pClientEntityList);
 	g_pLog->MsgFmt("ICvar class instance: %p", g_ICvar_Ctx.pICvar);
 	g_pLog->MsgFmt("IPanel class instance: %p", g_IPanel_Ctx.pIPanel);
+	g_pLog->MsgFmt("IInput class instance: %p", g_pInput);
 	LogImportedInterfaces();
 
 	//Add hook classes
