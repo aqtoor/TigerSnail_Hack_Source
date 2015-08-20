@@ -10,7 +10,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -48,6 +48,26 @@ public:
 
 	void Think(void);
 };
+
+class CCustomTraceFilter : public ITraceFilter {
+private:
+	IHandleEntity* m_pEntityToSkip;
+public:
+	CCustomTraceFilter(IHandleEntity* pEntityToSkip)
+	{
+		this->m_pEntityToSkip = pEntityToSkip;
+	}
+
+	virtual bool ShouldHitEntity(IHandleEntity *pEntity, int contentsMask)
+	{
+		return (pEntity != this->m_pEntityToSkip) ? true : false;
+	}
+
+	virtual TraceType_t	GetTraceType(void) const
+	{
+		return TRACE_EVERYTHING;
+	}
+};
 //======================================================================
 
 //======================================================================
@@ -55,6 +75,8 @@ bool FileExists(const std::string& szFileName);
 bool DeleteFileObject(const std::string& szObject);
 bool GetCurrentDateAndTime(std::string& szDateOut, std::string& szTimeOut);
 _C_BaseEntity* GetClientBaseEntity(int iEntIndex);
+bool PathFree(const Vector& vStart, const Vector& vEnd, const IHandleEntity* pIgnoreThisEnt, const unsigned int uiMask = MASK_ALL);
+bool SimulateLeftClick();
 //======================================================================
 
 #endif
