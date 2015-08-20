@@ -10,7 +10,7 @@
 	Developed by sk0r / Czybik
 	Credits: sk0r, OllyDbg, Source SDK
 
-	Version: 0.4
+	Version: 0.5
 	Visit: http://sk0r.sytes.net
 	Mail Czybik_Stylez<0x40>gmx<0x2E>de
 
@@ -403,7 +403,7 @@ bool RegisterMenu(void)
 
 	static CzyVisualComponents::windowinfo_s sWindowInfo = { //Window info
 		200, 200, //x y
-		240, 87 + 25 + 25 + 25 + 25 + 25 + 25 + 8, //w h
+		240, 87 + 25 + 25 + 25 + 25 + 25 + 25 + 25 + 8, //w h
 		{
 			//Colors
 			{0, 0, 0, 255}, //Borders
@@ -485,6 +485,10 @@ bool RegisterMenu(void)
 
 	//Attach Checkbox
 	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbColorModeESP", 5, 215, &sTextColor, &sBoxColor, &sHoverColor, "ESP Color Mode", "esp_colormode", g_pcvColorModeESP->iValue))
+		return false;
+
+	//Attach Checkbox
+	if (!CzyVisualComponents::AttachCheckbox(g_pMainForm, "cbPlayerModelColor", 5, 240, &sTextColor, &sBoxColor, &sHoverColor, "Playermodel Color", "vis_playermodelcolor", g_pcvPlayerModelColor->bValue))
 		return false;
 
 	return true;
@@ -628,6 +632,7 @@ bool RegisterCVars(void)
 	REG_CVAR(g_pcvBombESP, "esp_bomb", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
 	REG_CVAR(g_pcvIgnoreTeammatesESP, "esp_ignoreteammates", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
 	REG_CVAR(g_pcvColorModeESP, "esp_colormode", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "0");
+	REG_CVAR(g_pcvPlayerModelColor, "vis_playermodelcolor", CzyConfigMgr::CCVar::CVAR_TYPE_BOOL, "0");
 	REG_CVAR(g_pcvMenuKey, "key_menu", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "73");
 	REG_CVAR(g_pcvSnakeKey, "key_snake", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "74");
 	REG_CVAR(g_pcvInfoboxKey, "key_infobox", CzyConfigMgr::CCVar::CVAR_TYPE_INT, "75");
@@ -780,6 +785,9 @@ void WINAPI Event_EndScene(void)
 				g_oD3DRenderer.DrawString(szInfoText, "Verdana", 7, 15, g_ScreenSize.x / 2 - (szInfoText.length() / 2 * 7), 200, clrInfoColor.r, clrInfoColor.g, clrInfoColor.b, 150);
 			}
 		}
+
+		if (g_bInAttack)
+			g_oD3DRenderer.DrawString("IN_ATTACK!", "Verdana", 7, 15, 300, 200, 255, 0, 0, 255);
 	}
 }
 //======================================================================
