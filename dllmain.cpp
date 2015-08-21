@@ -237,8 +237,7 @@ DWORD WINAPI SearchThread(LPVOID lpvArguments)
 	g_pInput = (_IInput*)FindIInputClassInstance(&hdrClient);
 	if (!g_pInput)
 		ExitError("Failed to get IInput object");
-	DWORD* pdw = *(DWORD**)g_pInput;
-	//TESTchar lol[250];sprintf(lol,"%p", pdw[3]);MessageBoxA(0,lol,"lol",0);
+
 	//Log all found objects into the log-file
 	g_pLog->MsgFmt("appSystemFactory function: %p", g_appSystemFactory);
 	g_pLog->MsgFmt("CHLClient class instance: %p", g_CHLClient_Ctx.pCHLClient);
